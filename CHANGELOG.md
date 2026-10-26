@@ -11,6 +11,17 @@ then run `npm run bump:patch|minor|major` to cut a dated release section and upd
 
 ## [Unreleased]
 
+## [0.5.3] - 2026-10-27
+
+### Fixed
+
+- Market search results no longer contain `undefined` fields, so the
+  `market_search_mcp` / `market_search_skills` agent tools return lossless JSON.
+
+### Changed
+
+- Market tool results are lossless JSON.
+
 ## [0.5.2] - 2026-10-27
 
 ### Fixed

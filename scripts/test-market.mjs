@@ -180,7 +180,9 @@ assert.throws(
   () => mcpInstallPlan({ name: 'x', title: 'x', remotes: [], packages: [{ registryType: 'oci', identifier: 'image' }] }),
   /no npm\/pypi package/,
 );
-assert.equal(normalizeRegistryEntry({ name: 'io.x/y' }).name, 'io.x/y');
+const normalized = normalizeRegistryEntry({ name: 'io.x/y' });
+assert.equal(normalized.name, 'io.x/y');
+assert.deepEqual(JSON.parse(JSON.stringify(normalized)), normalized, 'normalized entries contain no undefined values');
 console.log('ok - MCP registry results map to stdio or http install plans');
 
 console.log(`\nsummary: ${calls.length} fake requests, 6 groups passed`);

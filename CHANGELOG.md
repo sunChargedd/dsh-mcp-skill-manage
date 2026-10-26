@@ -11,6 +11,17 @@ then run `npm run bump:patch|minor|major` to cut a dated release section and upd
 
 ## [Unreleased]
 
+## [0.5.4] - 2026-10-27
+
+### Fixed
+
+- Registry entries with optional environment-variable defaults no longer carry an
+  `undefined` field, which had made the market agent tools reject their own output.
+
+### Changed
+
+- Omit optional env defaults from market entries.
+
 ## [0.5.3] - 2026-10-27
 
 ### Fixed

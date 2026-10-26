@@ -118,6 +118,7 @@ Awesome DSH Plugin 的索引生成器会读取 npm 上已发布的版本。完�
 
 - [ ] 仓库 topic 含 `dsh-plugin`
 - [ ] `package.json` 有 `dsh.bundle.patch`
+- [ ] `package.json` 的 `engines.dsh` 与 README 兼容性表一致（市场索引会带上它）
 - [ ] 仓库满 1 天后提 Awesome PR
 - [ ] npm 包名可用并已 `npm publish`
 - [ ] Release 自动生成

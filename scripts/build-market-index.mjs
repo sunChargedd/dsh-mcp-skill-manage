@@ -74,7 +74,7 @@ const index = {
           version,
           publishTimestamp: Math.floor(Date.now() / 1000),
           source: { type: 'git', url: repositoryUrl, commit },
-          engines: {},
+          engines: manifest.engines?.dsh ? { dsh: manifest.engines.dsh } : {},
         },
       ],
     },

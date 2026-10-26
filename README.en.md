@@ -32,6 +32,16 @@ A [DeepSeek Harness (DSH)](https://github.com/deepseek-ai/deepseek-harness) Web 
 - **Agent tool `mcp_skill_manager`**: the model can inspect and maintain the same data through the same Host action layer.
 - Theme-token styling, dark/light mode and narrow-window support.
 
+## Compatibility
+
+| | Requirement |
+| --- | --- |
+| **DSH** | `>=0.2.1-rc.3 <0.3.0` (developed and verified against DSH Desktop / `@deepseek-ai/dsh-app-boot` **0.2.1-rc.3**) |
+| **Node.js** | `>=20` (the runtime DSH ships; the plugin has zero npm dependencies) |
+| **Platform** | verified on macOS; the test suite is cross-platform (CI runs on Linux without a DSH runtime) |
+
+`package.json` declares `engines.dsh`, so DSH checks compatibility before installing or loading the plugin and refuses it with a clear message instead of crashing at runtime. The self-hosted market index carries the same requirement. The plugin uses the `sidebar.panellist` / `main` slots, `ctx.locale`, `ctx.webServer.register`, `ctx.tools.register`, `profileContext` and `connection.requestRejection`; a future DSH 0.3 that changes those APIs will need a matching plugin release.
+
 ## Install
 
 Install this directory into your DSH profile with the Plugin Manager:

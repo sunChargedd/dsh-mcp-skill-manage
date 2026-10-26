@@ -62,6 +62,7 @@ recomposition; a plain page refresh (Cmd/Ctrl+R) reloads the client half.
   surrounding file.
 - The client half must not import Harness Client packages or use literal colors; use
   `--dsw-*` theme tokens so light/dark themes keep working.
+- Keep `package.json` `engines.dsh` in sync with the DSH APIs the plugin uses. When a change needs a newer DSH runtime, raise the lower bound and update the compatibility tables in both READMEs.
 - Every mutating adapter backs up first and writes atomically.
 - Keep the Host action layer as the single implementation: the UI and the agent tool
   call the same functions.

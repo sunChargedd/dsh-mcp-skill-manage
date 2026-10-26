@@ -121,6 +121,20 @@ plugin_manager action=install_bundle target=<仓库绝对路径>
 
 并确保包已可被 profile 解析（例如 `link:` 到本地目录）。
 
+## 兼容性
+
+| | 要求 |
+| --- | --- |
+| **DSH** | **`>=0.2.1-rc.3 <0.3.0`**（开发与实机验证版本：DSH Desktop / `@deepseek-ai/dsh-app-boot` **0.2.1-rc.3**） |
+| **Node.js** | `>=20`（跟随 DSH 内置运行时；插件本身零 npm 依赖） |
+| **平台** | 实机验证 macOS；测试套件跨平台（CI 在 Linux 运行，不依赖 DSH 运行时） |
+
+- `package.json` 声明了 `engines.dsh`。DSH 在安装/启动前会做兼容性检查：版本不满足时会**阻止加载并给出提示**，而不是加载后崩溃。
+- 自建市场索引 `market/index.json` 的版本条目同样携带 `engines.dsh`，Discover 可据此展示兼容性。
+- 用到的 DSH 扩展点：`sidebar.panellist` / `main` 槽位、`ctx.locale`、`ctx.webServer.register`、`ctx.tools.register`、`profileContext`、`connection.requestRejection`。Host 侧在激活时会检查 `webServer.register` 是否存在，缺失时抛出明确错误。
+- 如果 DSH 提示不兼容：升级到 0.2.x 即可；确需在其它版本上试用，可在 Plugin Manager 里对精确版本授予豁免（`dsh plugin allow-version`），风险自负。
+- DSH 0.3 若调整上述扩展点，本插件会同步升级并更新此表；请勿在 0.3 上直接安装当前版本。
+
 ## 使用
 
 左侧栏 →「MCP 与技能」：

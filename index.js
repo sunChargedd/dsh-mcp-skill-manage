@@ -1163,7 +1163,17 @@ export const __test = { buildState, managerTool, resolvePaths, runAction };
  * Register the data routes and the agent tool.
  * @param ctx - plugin context carrying the web server.
  */
+/** Refuse to activate on a runtime without the Host APIs this plugin needs. */
+function assertCompatibleRuntime(ctx) {
+  if (ctx === null || typeof ctx !== 'object' || typeof ctx.webServer?.register !== 'function') {
+    throw new Error(
+      'dsh-mcp-skill-manage requires DeepSeek Harness >=0.2.1-rc.3: ctx.webServer.register is unavailable.',
+    );
+  }
+}
+
 export function apply(ctx) {
+  assertCompatibleRuntime(ctx);
   const paths = resolvePaths(process.env);
   // The Desktop Host process does not inherit $DSH_PROFILE_DIR, but the launcher provides
   // the composed profile as a context value. Prefer it so DSH MCP edits land in the patch

@@ -11,6 +11,19 @@ then run `npm run bump:patch|minor|major` to cut a dated release section and upd
 
 ## [Unreleased]
 
+## [0.5.5] - 2026-10-27
+
+### Added
+
+- Explicit DSH compatibility metadata: `package.json` declares
+  `engines.dsh: ">=0.2.1-rc.3 <0.3.0"`, the Host refuses to activate when
+  `ctx.webServer.register` is missing, the market index carries the same requirement,
+  and both READMEs document the tested runtime (DSH 0.2.1-rc.3, Node >=20).
+
+### Changed
+
+- DSH compatibility metadata for safe installs.
+
 ## [0.5.4] - 2026-10-27
 
 ### Fixed

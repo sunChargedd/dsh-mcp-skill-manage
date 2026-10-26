@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" role="img" aria-label="MCP and Skill Manager">
+  <defs>
+    <linearGradient id="msm" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#5B8CFF"/>
+      <stop offset="1" stop-color="#7A5CFF"/>
+    </linearGradient>
+  </defs>
+  <rect x="2" y="2" width="60" height="60" rx="16" fill="url(#msm)"/>
+  <g transform="translate(5.6 4) scale(2.2)">
+    <g stroke="#FFFFFF" stroke-width="1.9" stroke-linecap="round" fill="none">
+      <path d="M9 3v3.4M15 3v3.4"/>
+      <path d="M12 13v5.4"/>
+    </g>
+    <rect x="7" y="6.4" width="10" height="6.6" rx="2.6" fill="#FFFFFF"/>
+    <circle cx="12" cy="20.4" r="1.2" fill="#FFFFFF"/>
+  </g>
+</svg>

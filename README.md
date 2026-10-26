@@ -1,0 +1,212 @@
+<div align="center">
+
+<img src="icon.svg" width="96" height="96" alt="MCP & Skill Manager icon" />
+
+# dsh-mcp-skill-manager
+
+**一个侧边栏页面，管理所有 agent 工具的 skill 与 MCP 服务器。**
+
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![Node](https://img.shields.io/badge/node-%3E%3D20-brightgreen)](package.json)
+[![CI](https://github.com/sunChargedd/dsh-mcp-skill-manager/actions/workflows/ci.yml/badge.svg)](https://github.com/sunChargedd/dsh-mcp-skill-manager/actions/workflows/ci.yml)
+[![DSH](https://img.shields.io/badge/DeepSeek%20Harness-plugin-4E7CF6)](https://github.com/deepseek-ai/deepseek-harness)
+
+**中文** | [English](README.en.md)
+
+</div>
+
+---
+
+## 这是什么
+
+`dsh-mcp-skill-manager` 是 [DeepSeek Harness (DSH)](https://github.com/deepseek-ai/deepseek-harness) 的 Web 插件。它在你常用的 agent 工具（DSH、Claude Code、Codex、Cursor、Windsurf、Qoder、Trae、通义灵码、CodeBuddy、Qwen Code、iFlow、Kimi、OpenCode、Cline/Roo/Kilo）之间，统一管理两样东西：
+
+- **Skills**：`SKILL.md` 技能包，增删改查、正文编辑、跨工具共享（符号链接）、导入导出、备份恢复；
+- **MCP Servers**：stdio / HTTP 服务器配置，增删改查、启停、跨工具复制、连接体检、备份恢复。
+
+不用再手动打开 `~/.claude.json`、`~/.codex/config.toml`、`~/.cursor/mcp.json`、profile 的 `cordis.patch.yml` 逐个复制粘贴。
+
+## 特性
+
+### Skills
+
+- 卡片网格浏览，搜索、按工具过滤；点击进入全宽详情页编辑，返回保留筛选。
+- 完整编辑 frontmatter：`name`、`description`、`whenToUse`、`metadata`、`disable-model-invocation`、`user-invocable`，以及 Markdown 正文。
+- 支持目录式 `<name>/SKILL.md` 与扁平 `<name>.md`；重命名自动维护已建立的符号链接。
+- **跨工具共享**：勾选工具即创建相对符号链接（与 `~/.claude/skills -> ~/.agents/skills` 的常见做法一致），单一主副本，不复制多份。
+- 卡片上可直接「打开主副本位置 / 删除（内联二次确认）」。
+- **导入 / 导出**：导出全部或单个 skill 为 `.zip`（保留 `references/`、`scripts/` 等目录）；从 zip 或本地目录导入，重名自动避让，不覆盖。
+- 非法 frontmatter、坏符号链接会标记为无效项，而不是让页面失败。
+
+### MCP
+
+- 表格视图：服务器 / 传输方式 / 命令或 URL / 目标 / 状态；行内开关直接启停，行内可删除、打开配置位置、测试连接。
+- stdio（command/args/env/cwd）与 HTTP/SSE（url/headers）两种传输；支持重命名。
+- **跨工具复制**：把某个 server 一键复制到其它工具配置（同名已存在则跳过）。
+- **连接体检**：真实执行一次 MCP 握手，显示工具数量、延迟、server 名称版本与工具名，或具体失败原因；超时 8 秒，失败不修改配置。
+- env/headers 默认打码，点「显示内容」才展开。
+- 只修改目标条目，其它行尽量保持原样；写前备份、原子写入；解析失败拒绝写入而不是覆盖。
+
+### 备份与恢复
+
+- 删除 skill、修改/删除 MCP 配置前自动留快照，保留最近 80 份。
+- 「备份」标签页按时间列出快照：skill 可恢复到任意可写根目录（重名加 `-restored`），配置文件可写回原目标（写回前再备份当前文件）；支持打开备份目录、删除快照。
+
+### 其它
+
+- **项目管理**：添加项目路径后自动纳入其项目级 skill / MCP 配置。
+- **自定义位置**：任意 skill 目录、任意 JSON / JSONC / TOML / YAML-patch MCP 配置文件都可手动接入。
+- **诊断**：汇总非法 skill、坏链接、同名冲突、不可读配置等问题。
+- **Agent 工具**：`mcp_skill_manager` 把页面能力开放给模型（`overview`、`list_skills`、`read_skill`、`save_skill`、`delete_skill`、`set_skill_visibility`、`list_mcp`、`save_mcp`、`delete_mcp`、`copy_mcp`、`list_backups`、`restore_backup`、`export_skills`、`import_skill`、`mcp_health`、`doctor`），与页面走同一套 Host 逻辑。
+- 深色 / 浅色主题、窄屏自适应，全部使用 DSH 主题 token。
+
+## 支持的工具
+
+| 工具 | Skills 根目录（用户级） | MCP 配置 |
+| --- | --- | --- |
+| 共享 hub | `~/.agents/skills` | — |
+| DSH | `~/.dsh/skills` | 当前 profile 的 `cordis.patch.yml`（HMR 即时生效） |
+| Claude Code | `~/.claude/skills` | `~/.claude.json` |
+| Codex | `~/.codex/skills` | `~/.codex/config.toml` |
+| Cursor | `~/.cursor/skills` | `~/.cursor/mcp.json` |
+| Windsurf | `~/.codeium/windsurf/skills` | `~/.codeium/windsurf/mcp_config.json` |
+| Gemini CLI | `~/.gemini/skills` | `~/.gemini/settings.json` |
+| OpenCode | `~/.config/opencode/skills` | `~/.config/opencode/opencode.json` |
+| Qwen Code | `~/.qwen/skills` | `~/.qwen/settings.json` |
+| iFlow CLI | `~/.iflow/skills` | `~/.iflow/settings.json` |
+| Kimi Code CLI | `~/.kimi/skills` | `~/.kimi/config.json` |
+| Qoder | `~/.qoder/skills` | `~/.qoder/mcp.json` |
+| Trae | `~/.trae/skills` | `~/.trae/mcp.json` |
+| 通义灵码 | `~/.lingma/skills` | `~/.lingma/mcp.json` |
+| CodeBuddy | `~/.codebuddy/skills` | `~/.codebuddy/mcp.json` |
+| Cline / Roo / Kilo | — | VS Code `globalStorage` 下的 MCP 设置 |
+
+> 部分工具的路径为社区约定，**只有在检测到对应文件/目录时才会显示**；你的版本路径不同也没关系，在「设置」里用「自定义位置」接入即可。项目级根目录（`.dsh/`、`.agents/`、`.claude/`、`.codex/`、`.cursor/`、`.gemini/`、`.opencode/`、`.qwen/`、`.iflow/`、`.kimi/`、`.qoder/`、`.trae/`、`.lingma/`、`.codebuddy/` 下的 `skills/`）会按已跟踪项目自动发现。
+
+## 安装
+
+### 通过 Plugin Manager（推荐）
+
+把这个仓库目录安装到你的 DSH profile：
+
+```text
+plugin_manager action=install_bundle target=<仓库绝对路径>
+```
+
+安装后刷新 Web 页面，左侧栏会出现插头图标「MCP 与技能」。入口 id 为 `mcp-skill-manager`。
+
+### 手动
+
+在 profile 的 `cordis.patch.yml` 中加入：
+
+```yaml
+- insert:
+    - id: mcp-skill-manager
+      name: 'dsh-mcp-skill-manager'
+      config: {}
+```
+
+并确保包已可被 profile 解析（例如 `link:` 到本地目录）。
+
+## 使用
+
+左侧栏 →「MCP 与技能」：
+
+- **Skills**：搜索 / 过滤 skill；卡片右侧按钮可直接打开位置或删除；点击卡片进入编辑页。
+- **MCP**：表格里直接启停、删除、测试连接；点击行进入详情页编辑。
+- **备份**：任何一次删除或配置写入都会出现在这里，可恢复。
+- **设置与诊断**：跟踪项目、自定义 skill 目录 / MCP 配置文件、查看检测到的工具位置与问题列表。
+
+## 架构
+
+```
+┌───────────────────────────── 浏览器 ─────────────────────────────┐
+│  client.js                                                       │
+│  sidebar.panellist 入口  +  main 面板（列表页 / 详情页）           │
+│  React（module table）+ ctx.slots / ctx.locale，无第三方依赖       │
+└───────────────▲───────────────────────────────┬──────────────────┘
+                │ GET /mcp-skill-manager/state   │ POST /mcp-skill-manager/action
+                │ (JSON, 同源 + connection 鉴权)  │
+┌───────────────┴───────────────────────────────▼──────────────────┐
+│  index.js（Host 插件）                                            │
+│  action 分发 · 快照组装 · 设置持久化 · `mcp_skill_manager` 工具     │
+└───────┬──────────────────────┬──────────────────────┬────────────┘
+        │                      │                      │
+┌───────▼────────┐   ┌─────────▼────────┐   ┌─────────▼─────────┐
+│ lib/adapters.js│   │ lib/zip.js       │   │ lib/probe.js      │
+│ 扫描 / 解析 /   │   │ 无依赖 zip 读写   │   │ MCP 握手探测       │
+│ 写入 / 链接 /   │   │ STORE + DEFLATE  │   │ stdio / HTTP / SSE│
+│ 备份恢复        │   └──────────────────┘   └───────────────────┘
+└───────┬────────┘
+        │
+   agent 工具配置文件（skills + MCP）+ ~/.dsh/.mcp-skill-manager/
+```
+
+| 文件 | 职责 |
+| --- | --- |
+| `index.js` | Host 插件：路由、action 分发、`mcp_skill_manager` 工具、设置。 |
+| `client.js` | 浏览器插件：侧边栏入口与管理页；不 import 任何 Harness Client 包。 |
+| `lib/adapters.js` | 文件系统数据层：SKILL.md / JSON(C) / TOML / YAML-patch 读写、符号链接、备份恢复。 |
+| `lib/presets.js` | 各工具路径候选表（纯数据）。 |
+| `lib/zip.js` | 无依赖 zip 读写。 |
+| `lib/probe.js` | MCP 连接探测。 |
+| `docs/CONTRACT.md` | Host / adapters / client 之间的内部契约。 |
+
+## 数据与安全
+
+- 只操作 README 表格里列出的目录与文件，以及 `~/.dsh/.mcp-skill-manager/`（设置、导出、备份）。
+- 所有写操作：先备份 → 原子写入；文本配置只改目标条目，尽量保留其它内容。
+- 两条 Host 路由使用 `connection.requestRejection` 鉴权，未认证请求返回 401。
+- 插件本身不向外发送任何数据；「测试连接」只会访问你为该 MCP server 配置的地址或命令。
+- DSH 的 MCP 修改写入当前 profile 的 patch 文件，由 loader 监听热生效。
+
+## 开发
+
+要求 Node.js >= 20，无运行时依赖、无构建步骤。
+
+```bash
+git clone https://github.com/sunChargedd/dsh-mcp-skill-manager.git
+cd dsh-mcp-skill-manager
+npm test
+```
+
+| 命令 | 说明 |
+| --- | --- |
+| `npm run check` | 所有源文件语法检查 |
+| `npm run test:adapters` | 数据层（304 项，临时 HOME） |
+| `npm run test:tools` | zip 与 MCP 探针 |
+| `npm run test:actions` | Host action 端到端（含真实 stdio MCP 握手、备份恢复、zip 往返） |
+| `npm run test:render` | 无头渲染 UI（临时 HOME，覆盖列表→详情→返回、快捷操作、备份页） |
+| `npm test` | 以上全部 |
+
+贡献流程、代码约定与如何新增一个工具支持见 [CONTRIBUTING.md](CONTRIBUTING.md)。
+
+## 版本与发布
+
+本项目遵循 [Semantic Versioning](https://semver.org/) 与 [Keep a Changelog](https://keepachangelog.com/)。
+
+**每次面向用户的功能变更都要加版本号**：
+
+1. 在 `CHANGELOG.md` 的 `## [Unreleased]` 下记录改动；
+2. 发布时执行 `npm run bump:patch`（修复/文档）、`npm run bump:minor`（新功能）或 `npm run bump:major`（破坏性变更）；
+   脚本会把 `[Unreleased]` 切成带日期的版本段，并同步 `package.json`；
+3. 提交 `package.json` + `CHANGELOG.md`，打 tag 并推送。
+
+## 已知限制
+
+- 部分工具的配置路径是社区约定（Qoder、Trae、灵码、CodeBuddy 等），检测不到时用「自定义位置」补。
+- JSONC 文件写入会丢失注释（写前有备份）；TOML 目前仅用于 Codex。
+- 直接在卡片/表格里的快捷删除**不会**再次弹窗，但会内联二次确认并保留备份。
+- MCP 体检会按配置真实启动进程或发起请求，请只对自己信任的 server 使用。
+
+## 参与贡献
+
+欢迎 Issue、PR、以及「支持某个新工具」的路径情报。开始之前请阅读
+[CONTRIBUTING.md](CONTRIBUTING.md) 与 [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md)；
+安全问题请按 [SECURITY.md](SECURITY.md) 私下报告。
+
+如果这个插件帮到了你，点个 ⭐ Star 是最好的支持。
+
+## 许可证
+
+[MIT](LICENSE) © 2026 sunChargedd

@@ -1,0 +1,32 @@
+name: Feature request
+description: Suggest a workflow or a new agent tool to support.
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: What problem are you trying to solve?
+      description: Describe the workflow, not only the UI you imagine.
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed solution
+  - type: dropdown
+    id: scope
+    attributes:
+      label: Area
+      options:
+        - Skills
+        - MCP servers
+        - Backups / history
+        - Import / export
+        - New tool support
+        - UI / UX
+        - Agent tool
+        - Other
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered

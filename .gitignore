@@ -1,0 +1,28 @@
+# Logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
+
+# Dependencies (the plugin has none at runtime, but tooling may create these)
+node_modules/
+.pnpm-store/
+
+# OS / editor noise
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Local test artefacts
+coverage/
+test-results/
+.tmp/
+*.tmp-*
+*.bak-*
+*.bak
+
+# Local plugin state must never be committed
+.mcp-skill-manager/
+exports/

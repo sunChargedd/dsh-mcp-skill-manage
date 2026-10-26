@@ -1,0 +1,33 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: Node ${{ matrix.node }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        node: [20, 22]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+      - name: Syntax check
+        run: npm run check
+      - name: Data layer
+        run: npm run test:adapters
+      - name: Utilities (zip + MCP probe)
+        run: npm run test:tools
+      - name: Host actions
+        run: npm run test:actions
+      - name: Headless UI render
+        run: npm run test:render

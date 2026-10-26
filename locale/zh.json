@@ -1,0 +1,6 @@
+{
+  "meta": {
+    "title": "MCP 与技能管理",
+    "description": "一个侧边栏页面统一管理 DSH、Claude Code、Codex、Cursor 等 agent 工具的 skill 与 MCP：浏览、新建、编辑、删除、跨工具共享 skill；新增、编辑、复制、删除各工具配置里的 MCP 服务器。"
+  }
+}

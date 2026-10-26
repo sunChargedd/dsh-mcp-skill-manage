@@ -1,0 +1,76 @@
+{
+  "name": "dsh-mcp-skill-manager",
+  "version": "0.2.1",
+  "description": "MCP & Skill Manager — a DSH Web plugin that manages agent skills and MCP servers across DSH, Claude Code, Codex, Cursor and other agent tools from one sidebar page.",
+  "keywords": [
+    "dsh",
+    "deepseek-harness",
+    "plugin",
+    "mcp",
+    "model-context-protocol",
+    "skills",
+    "agent-skills",
+    "claude-code",
+    "codex",
+    "cursor",
+    "windsurf",
+    "qoder",
+    "trae",
+    "lingma",
+    "codebuddy"
+  ],
+  "homepage": "https://github.com/sunChargedd/dsh-mcp-skill-manager#readme",
+  "bugs": {
+    "url": "https://github.com/sunChargedd/dsh-mcp-skill-manager/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sunChargedd/dsh-mcp-skill-manager.git"
+  },
+  "author": "Sun <sun@charged.asia>",
+  "license": "MIT",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "exports": {
+    ".": "./index.js",
+    "./client": "./client.js",
+    "./locale/*.json": "./locale/*.json",
+    "./icon": "./icon.svg"
+  },
+  "files": [
+    "index.js",
+    "client.js",
+    "cordis.patch.yml",
+    "lib/**/*.js",
+    "locale/*.json",
+    "icon.svg"
+  ],
+  "scripts": {
+    "check": "node --check index.js && node --check client.js && node --check lib/adapters.js && node --check lib/presets.js && node --check lib/zip.js && node --check lib/probe.js",
+    "test": "npm run check && node scripts/test-adapters.mjs && node scripts/test-tools.mjs && node scripts/test-actions.mjs && node scripts/test-render.mjs",
+    "test:adapters": "node scripts/test-adapters.mjs",
+    "test:tools": "node scripts/test-tools.mjs",
+    "test:actions": "node scripts/test-actions.mjs",
+    "test:render": "node scripts/test-render.mjs",
+    "bump:patch": "node scripts/bump-version.mjs patch",
+    "bump:minor": "node scripts/bump-version.mjs minor",
+    "bump:major": "node scripts/bump-version.mjs major"
+  },
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    },
+    "client": {
+      "platform": "web",
+      "immediately": true,
+      "inject": [
+        "@deepseek-ai/dsh-client-locale",
+        "@deepseek-ai/dsh-client-ui-sidebar",
+        "@deepseek-ai/dsh-client-ui-layout"
+      ]
+    }
+  }
+}

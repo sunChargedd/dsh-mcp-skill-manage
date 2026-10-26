@@ -1,0 +1,60 @@
+name: Bug report
+description: Report a reproducible problem with the MCP & Skill Manager plugin.
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for the report. Please avoid pasting API keys, tokens or private paths.
+        Security issues: do **not** file them here, see SECURITY.md.
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: What did you do, what did you expect, what happened instead?
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Open the sidebar entry ...
+        2. Click ...
+        3. See error ...
+    validations:
+      required: true
+  - type: input
+    id: dsh-version
+    attributes:
+      label: DSH version
+      placeholder: e.g. 0.2.1-rc.3
+    validations:
+      required: true
+  - type: input
+    id: plugin-version
+    attributes:
+      label: Plugin version
+      description: From package.json or the Plugin Manager row.
+      placeholder: e.g. 0.2.1
+    validations:
+      required: true
+  - type: input
+    id: os
+    attributes:
+      label: OS
+      placeholder: e.g. macOS 15.1, Windows 11, Ubuntu 24.04
+    validations:
+      required: true
+  - type: textarea
+    id: console
+    attributes:
+      label: Console / Host errors
+      description: Browser console output (filter by "mcp-skill-manager") or DSH logs.
+      render: shell
+  - type: textarea
+    id: config-context
+    attributes:
+      label: Which tool/config was involved?
+      description: Tool name and the config shape, with secrets redacted.
+      render: json

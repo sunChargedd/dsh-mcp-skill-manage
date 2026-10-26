@@ -1,0 +1,64 @@
+{
+  "format": 1,
+  "title": {
+    "en": "MCP & Skill Manager",
+    "zh": "MCP 与技能管理"
+  },
+  "description": {
+    "en": "Manage skills and MCP servers across DSH, Claude Code, Codex, Cursor and other agent tools from one DSH sidebar page.",
+    "zh": "在 DSH 侧边栏统一管理 DSH、Claude Code、Codex、Cursor 等 agent 工具的 skill 与 MCP 服务器。"
+  },
+  "metadata": {
+    "categories": {
+      "tools": {
+        "title": {
+          "en": "Tools & Capabilities",
+          "zh": "工具与能力"
+        }
+      }
+    }
+  },
+  "plugins": [
+    {
+      "name": "dsh-mcp-skill-manager",
+      "title": {
+        "en": "MCP & Skill Manager",
+        "zh": "MCP 与技能管理"
+      },
+      "description": {
+        "en": "Sidebar page for skills and MCP servers across agent tools: CRUD, cross-tool symlink sharing, import/export, backups, MCP health checks.",
+        "zh": "侧边栏页面统一管理多工具 skill 与 MCP：增删改查、跨工具共享、导入导出、备份恢复、连接体检。"
+      },
+      "icon": "https://raw.githubusercontent.com/sunChargedd/dsh-mcp-skill-manager/main/icon.svg",
+      "author": "sunChargedd",
+      "homepage": "https://github.com/sunChargedd/dsh-mcp-skill-manager#readme",
+      "repository": {
+        "url": "https://github.com/sunChargedd/dsh-mcp-skill-manager"
+      },
+      "metadata": {
+        "category": "tools",
+        "keywords": [
+          "dsh",
+          "mcp",
+          "skills",
+          "claude-code",
+          "codex",
+          "cursor"
+        ],
+        "labels": []
+      },
+      "versions": [
+        {
+          "version": "0.2.2",
+          "publishTimestamp": 1793038330,
+          "source": {
+            "type": "git",
+            "url": "https://github.com/sunChargedd/dsh-mcp-skill-manager",
+            "commit": "d73094783a2f3094c1dbb8e1ba29c5fe804af6d9"
+          },
+          "engines": {}
+        }
+      ]
+    }
+  ]
+}

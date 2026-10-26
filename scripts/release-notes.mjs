@@ -22,6 +22,21 @@ if (!/^\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?$/.test(version)) {
   process.exit(1);
 }
 
+// Optional curated (e.g. bilingual) notes win over the generated CHANGELOG section.
+const overrideUrl = new URL(`../docs/release-notes/${version}.md`, import.meta.url);
+try {
+  const curated = await readFile(overrideUrl, 'utf8');
+  if (outputPath) {
+    await writeFile(outputPath, curated, 'utf8');
+    console.log(`release-notes: wrote curated notes to ${outputPath} for ${version}`);
+  } else {
+    process.stdout.write(curated);
+  }
+  process.exit(0);
+} catch {
+  /* fall back to CHANGELOG */
+}
+
 const changelog = await readFile(new URL('../CHANGELOG.md', import.meta.url), 'utf8');
 const lines = changelog.split(/\r?\n/);
 const start = lines.findIndex((line) => line.trim() === `## [${version}]` || line.startsWith(`## [${version}] `));

@@ -117,7 +117,7 @@ Awesome DSH Plugin 的索引生成器会读取 npm 上已发布的版本。完�
   git push && git push --follow-tags
   ```
 - 推送 `v*` tag 后，[Release workflow](../.github/workflows/release.yml) 会自动：
-  1. 用 `scripts/release-notes.mjs` 从 `CHANGELOG.md` 截取该版本段落；
+  1. 用 `scripts/release-notes.mjs` 取该版本说明：优先 `docs/release-notes/<version>.md`（可写中英双语），否则从 `CHANGELOG.md` 截取该版本段落；
   2. 创建（或跳过已存在的）GitHub Release。
 - 发版检查清单：CI 通过；Release 已生成；`market/index.json` 已刷新（如果使用自建索引）。
 

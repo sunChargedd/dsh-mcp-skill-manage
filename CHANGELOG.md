@@ -11,6 +11,14 @@ then run `npm run bump:patch|minor|major` to cut a dated release section and upd
 
 ## [Unreleased]
 
+### Added
+
+- `docs/release-notes/<version>.md`: curated (bilingual) release notes; the Release
+  workflow's `scripts/release-notes.mjs` prefers them over the generated CHANGELOG
+  section.
+- `market/index.json`: self-hosted format-1 market index for v0.2.2 (git source pinned
+  to the release commit), validated with DSH's own index validator.
+
 ## [0.2.2] - 2026-10-27
 
 ### Added

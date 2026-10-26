@@ -194,7 +194,7 @@ npm test
    脚本会把 `[Unreleased]` 切成带日期的版本段，并同步 `package.json`；
 3. 提交后打 tag 并推送：`git tag vX.Y.Z && git push --follow-tags`。
 
-推送 tag 后，GitHub Actions 的 **Release** workflow 会自动用该版本的 CHANGELOG 段落创建 GitHub Release（见 `.github/workflows/release.yml`）。
+推送 tag 后，GitHub Actions 的 **Release** workflow 会自动创建 GitHub Release：优先使用 `docs/release-notes/<version>.md`（可写中英双语），没有则使用该版本的 CHANGELOG 段落（见 `.github/workflows/release.yml`）。
 
 ### 发布到插件市场
 

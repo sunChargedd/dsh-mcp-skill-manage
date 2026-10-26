@@ -158,6 +158,7 @@ window.__ModuleLoader__.load({
       'market.targetConfig': 'Add to',
       'market.resultCount': '{count} results',
       'market.failed': 'Market request failed: {message}',
+      'market.fallbackWarning': 'MCP Registry is unreachable; showing built-in popular servers.',
       'backup.note': 'Every edit and delete keeps a snapshot. Restoring a config writes the old file back (a fresh backup is taken first); restoring a skill adds a -restored suffix when the name is taken.',
       'backup.empty': 'No backups yet.',
       'backup.emptyHint': 'Snapshots appear here after the first edit or delete.',
@@ -316,6 +317,7 @@ window.__ModuleLoader__.load({
       'market.targetConfig': '添加到',
       'market.resultCount': '{count} 个结果',
       'market.failed': '市场请求失败：{message}',
+      'market.fallbackWarning': 'MCP Registry 暂时不可用，已切换为内置常用服务器列表。',
       'backup.note': '每次编辑和删除都会留一份快照。恢复配置文件会写回旧内容（写回前会再备份一次当前文件）；恢复 skill 时若重名会自动加 -restored 后缀。',
       'backup.empty': '还没有备份。',
       'backup.emptyHint': '第一次编辑或删除后会在这里出现快照。',
@@ -2671,6 +2673,7 @@ window.__ModuleLoader__.load({
       const [results, setResults] = React.useState(null);
       const [loading, setLoading] = React.useState(false);
       const [error, setError] = React.useState('');
+      const [warning, setWarning] = React.useState('');
       const [notice, setNotice] = React.useState(null);
       const [installing, setInstalling] = React.useState(null);
       const roots = state.skillRoots.filter((root) => root.writable);
@@ -2681,6 +2684,7 @@ window.__ModuleLoader__.load({
       React.useEffect(() => {
         setResults(null);
         setError('');
+        setWarning('');
       }, [kind]);
 
       const flash = (message) => {
@@ -2693,12 +2697,14 @@ window.__ModuleLoader__.load({
         if (term.length < 2) return;
         setLoading(true);
         setError('');
+        setWarning('');
         try {
           const value = await manager.run(kind === 'skills' ? 'market/skills' : 'market/mcp', {
             query: term,
             limit: 24,
           });
           setResults(value?.results ?? []);
+          if (value?.fallback) setWarning(t('market.fallbackWarning'));
         } catch (cause) {
           setError(t('market.failed', { message: cause.message }));
           setResults([]);
@@ -2785,6 +2791,7 @@ window.__ModuleLoader__.load({
             ),
           ),
           error ? h(Note, { tone: 'error' }, error) : null,
+          warning ? h(Note, { tone: 'warn' }, warning) : null,
           notice ? h('div', { className: 'msm-toast' }, notice) : null,
           results === null
             ? h(Empty, {

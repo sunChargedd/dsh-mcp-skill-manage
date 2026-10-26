@@ -135,11 +135,10 @@ assert.deepEqual(
 );
 console.log('ok - tree picking handles root-level and nested skills');
 
-// --- MCP registry fallback (slow version=latest) ---------------------------
-const fallbackCalls = [];
-const fallbackFetch = async (url) => {
-  fallbackCalls.push(String(url));
-  if (String(url).includes('version=latest')) throw new Error('timed out');
+// --- MCP registry dedup + curated fallback ---------------------------------
+const dedupeCalls = [];
+const dedupeFetch = async (url) => {
+  dedupeCalls.push(String(url));
   return jsonResponse({
     servers: [
       { server: { name: 'io.acme/one', title: 'One', version: '1.0.0', remotes: [{ type: 'streamable-http', url: 'https://one.test/mcp' }] }, _meta: { 'io.modelcontextprotocol.registry/official': { isLatest: false } } },
@@ -148,10 +147,20 @@ const fallbackFetch = async (url) => {
     ],
   });
 };
-const fallback = await searchMcpRegistry('acme', { fetchImpl: fallbackFetch, limit: 5 });
-assert.deepEqual(fallback.results.map((entry) => entry.version), ['2.0.0', '0.1.0']);
-assert.equal(fallbackCalls.length, 2, 'primary attempt then fallback');
-console.log('ok - MCP registry falls back to a deduplicated unfiltered list');
+const deduped = await searchMcpRegistry('acme', { fetchImpl: dedupeFetch, limit: 5 });
+assert.deepEqual(deduped.results.map((entry) => entry.version), ['2.0.0', '0.1.0']);
+assert.equal(dedupeCalls.length, 1, 'a single unfiltered registry request is enough');
+console.log('ok - MCP registry keeps the newest entry per server name');
+
+const offline = await searchMcpRegistry('context7', {
+  fetchImpl: async () => {
+    throw new Error('offline');
+  },
+  limit: 5,
+});
+assert.equal(offline.fallback, true);
+assert.ok(offline.results.some((entry) => entry.name === 'context7'));
+console.log('ok - MCP search falls back to the curated list when the registry is offline');
 
 // --- MCP registry search + install planning --------------------------------
 const mcpSearch = await searchMcpRegistry('acme', { fetchImpl: fakeFetch, limit: 5 });

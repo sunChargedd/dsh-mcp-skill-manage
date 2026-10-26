@@ -57,7 +57,7 @@
 - **MCP 市场**：数据来自官方 [Model Context Protocol Registry](https://registry.modelcontextprotocol.io)；搜索结果可一键加入任意 MCP 配置：优先使用 registry 的 remote HTTP 端点，否则按 npm/pypi 包生成 `npx`/`uvx` stdio 配置，必填环境变量会以空值占位并提示。
 - 两个市场都在同一个「市场」标签页里，可切换来源、搜索关键字、选择安装目标；网络请求只在你主动搜索/安装时发生，搜索结果缓存 5 分钟。
 - Agent 工具同步提供 `market_search_skills`、`market_install_skill`、`market_search_mcp`、`market_install_mcp`。
-- MCP Registry 的 `version=latest` 查询偶尔很慢，插件会自动降级为无过滤列表并按 registry 的 latest 标记去重，避免直接失败。
+- MCP Registry 的 `version=latest` 查询经常很慢，插件改为直接取无过滤列表并按 latest 标记/版本去重；registry 不可用时自动回退到内置常用服务器列表（Context7、Filesystem、GitHub、SQLite、Playwright、Memory 等）并给出提示。
 - 可选：设置 `GITHUB_TOKEN` 环境变量可提高 GitHub API 速率限制（不设置也能用，匿名 60 次/小时）。
 
 ### 备份与恢复

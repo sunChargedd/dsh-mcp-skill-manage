@@ -1,6 +1,6 @@
 {
   "name": "dsh-mcp-skill-manage",
-  "version": "0.5.1",
+  "version": "0.5.2",
   "description": "MCP & Skill Manager — a DSH Web plugin that manages agent skills and MCP servers across DSH, Claude Code, Codex, Cursor and other agent tools from one sidebar page.",
   "keywords": [
     "dsh",

@@ -151,6 +151,8 @@ plugin_manager action=install_bundle target=<仓库绝对路径>
 | `lib/zip.js` | 无依赖 zip 读写。 |
 | `lib/probe.js` | MCP 连接探测。 |
 | `docs/CONTRACT.md` | Host / adapters / client 之间的内部契约。 |
+| `docs/PUBLISHING.md` | 发布、收录与市场索引指南。 |
+| `market/` | 自建市场索引与 Awesome 收录模板。 |
 
 ## 数据与安全
 
@@ -190,7 +192,16 @@ npm test
 1. 在 `CHANGELOG.md` 的 `## [Unreleased]` 下记录改动；
 2. 发布时执行 `npm run bump:patch`（修复/文档）、`npm run bump:minor`（新功能）或 `npm run bump:major`（破坏性变更）；
    脚本会把 `[Unreleased]` 切成带日期的版本段，并同步 `package.json`；
-3. 提交 `package.json` + `CHANGELOG.md`，打 tag 并推送。
+3. 提交后打 tag 并推送：`git tag vX.Y.Z && git push --follow-tags`。
+
+推送 tag 后，GitHub Actions 的 **Release** workflow 会自动用该版本的 CHANGELOG 段落创建 GitHub Release（见 `.github/workflows/release.yml`）。
+
+### 发布到插件市场
+
+三条路径（自建索引 / Awesome 列表收录 / npm + 默认市场）的完整步骤、当前 npm 包名占用情况与收录要求，见 **[docs/PUBLISHING.md](docs/PUBLISHING.md)**。仓库内已包含：
+
+- `npm run market:build`：生成自建 format-1 市场索引（git source，固定 commit）；
+- `market/awesome-plugin.yml`：提交给 Awesome DSH Plugin 的条目模板。
 
 ## 已知限制
 

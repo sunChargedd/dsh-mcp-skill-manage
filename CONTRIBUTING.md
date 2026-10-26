@@ -38,7 +38,11 @@ recomposition; a plain page refresh (Cmd/Ctrl+R) reloads the client half.
 | `lib/zip.js` | Zero-dependency zip reader/writer for skill import/export. |
 | `lib/probe.js` | MCP health probe (stdio JSON-RPC, HTTP, SSE). |
 | `scripts/test-*.mjs` | Self tests: data layer, utilities, Host actions, headless UI render. |
+| `scripts/bump-version.mjs` | Cuts `[Unreleased]` into a dated CHANGELOG release and bumps `package.json`. |
+| `scripts/release-notes.mjs` | Extracts one released CHANGELOG section (used by the Release workflow). |
+| `scripts/build-market-index.mjs` | Generates the self-hosted format-1 market index. |
 | `docs/CONTRACT.md` | Internal interface contract between Host, adapters and client. |
+| `docs/PUBLISHING.md` | npm / Awesome list / self-hosted index distribution guide. |
 
 ## Adding support for another agent tool
 
@@ -88,7 +92,8 @@ This project follows [Semantic Versioning](https://semver.org/) and
    ```
    This moves `[Unreleased]` into a dated section and updates `package.json`.
 3. Commit `package.json` + `CHANGELOG.md` as `chore(release): vX.Y.Z`, tag `vX.Y.Z`, and
-   push with `git push --follow-tags`.
+   push with `git push --follow-tags`. The Release workflow creates the GitHub Release
+   from that changelog section automatically.
 
 ## Pull requests
 

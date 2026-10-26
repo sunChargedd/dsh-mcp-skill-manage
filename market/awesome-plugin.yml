@@ -1,0 +1,7 @@
+url: https://github.com/sunChargedd/dsh-mcp-skill-manager
+name: sunChargedd/dsh-mcp-skill-manager
+category: tools
+description:
+  en: Manage skills and MCP servers across DSH, Claude Code, Codex, Cursor and other agent tools from one sidebar page.
+  zh: 在 DSH 侧边栏统一管理 DSH、Claude Code、Codex、Cursor 等 agent 工具的 skill 与 MCP 服务器。
+icon: https://raw.githubusercontent.com/sunChargedd/dsh-mcp-skill-manager/main/icon.svg

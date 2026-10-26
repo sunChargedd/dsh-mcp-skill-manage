@@ -11,6 +11,22 @@ then run `npm run bump:patch|minor|major` to cut a dated release section and upd
 
 ## [Unreleased]
 
+## [0.2.2] - 2026-10-27
+
+### Added
+
+- GitHub Actions **Release** workflow: pushing a `v*` tag publishes a GitHub Release
+  using that version's `CHANGELOG.md` section (`scripts/release-notes.mjs`, idempotent).
+- `scripts/build-market-index.mjs` + `market/`: self-hosted format-1 market index
+  (git source pinned to the release commit) and the Awesome DSH Plugin submission
+  template.
+- `docs/PUBLISHING.md`: npm publication, Awesome list submission and self-hosted index
+  instructions, including the current npm package-name collision.
+
+### Changed
+
+- Automated GitHub releases from tags and a market publishing guide.
+
 ## [0.2.1] - 2026-10-27
 
 ### Added

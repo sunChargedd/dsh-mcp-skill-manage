@@ -1,6 +1,6 @@
 {
   "name": "dsh-mcp-skill-manager",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "MCP & Skill Manager — a DSH Web plugin that manages agent skills and MCP servers across DSH, Claude Code, Codex, Cursor and other agent tools from one sidebar page.",
   "keywords": [
     "dsh",
@@ -49,7 +49,7 @@
     "icon.svg"
   ],
   "scripts": {
-    "check": "node --check index.js && node --check client.js && node --check lib/adapters.js && node --check lib/presets.js && node --check lib/zip.js && node --check lib/probe.js",
+    "check": "node --check index.js && node --check client.js && node --check lib/adapters.js && node --check lib/presets.js && node --check lib/zip.js && node --check lib/probe.js && node --check scripts/bump-version.mjs && node --check scripts/release-notes.mjs && node --check scripts/build-market-index.mjs",
     "test": "npm run check && node scripts/test-adapters.mjs && node scripts/test-tools.mjs && node scripts/test-actions.mjs && node scripts/test-render.mjs",
     "test:adapters": "node scripts/test-adapters.mjs",
     "test:tools": "node scripts/test-tools.mjs",
@@ -57,7 +57,9 @@
     "test:render": "node scripts/test-render.mjs",
     "bump:patch": "node scripts/bump-version.mjs patch",
     "bump:minor": "node scripts/bump-version.mjs minor",
-    "bump:major": "node scripts/bump-version.mjs major"
+    "bump:major": "node scripts/bump-version.mjs major",
+    "release:notes": "node scripts/release-notes.mjs",
+    "market:build": "node scripts/build-market-index.mjs"
   },
   "dsh": {
     "bundle": {

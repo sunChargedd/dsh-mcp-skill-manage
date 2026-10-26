@@ -322,6 +322,33 @@ function groupImportedSkills(files) {
   return { bundles: [...bundles.values()], flat };
 }
 
+/** Short-lived cache for market searches (the MCP registry is slow). */
+const MARKET_CACHE = new Map();
+const MARKET_CACHE_TTL_MS = 5 * 60 * 1000;
+
+/** Memoize one market search for five minutes and cap the cache size. */
+async function cachedMarket(key, loader) {
+  const hit = MARKET_CACHE.get(key);
+  if (hit !== undefined && hit.expiresAt > Date.now()) return hit.value;
+  const value = await loader();
+  MARKET_CACHE.set(key, { value, expiresAt: Date.now() + MARKET_CACHE_TTL_MS });
+  if (MARKET_CACHE.size > 200) {
+    const oldest = MARKET_CACHE.keys().next().value;
+    if (oldest !== undefined) MARKET_CACHE.delete(oldest);
+  }
+  return value;
+}
+
+/** Cached skills.sh search. */
+function marketSkills(query, limit) {
+  return cachedMarket(`skills:${limit}:${query.toLowerCase()}`, () => searchSkillMarket(query, { limit }));
+}
+
+/** Cached MCP registry search. */
+function marketMcp(query, limit) {
+  return cachedMarket(`mcp:${limit}:${query.toLowerCase()}`, () => searchMcpRegistry(query, { limit }));
+}
+
 /** Compose the complete snapshot the page and the tool read. */
 async function buildState(paths, settings) {
   const projects = settings.projects;
@@ -784,16 +811,12 @@ async function runAction(paths, action, params) {
 
     case 'market/skills': {
       const query = requireString(params, 'query');
-      return await searchSkillMarket(query, {
-        limit: Number.isInteger(params.limit) ? params.limit : 20,
-      });
+      return await marketSkills(query, Number.isInteger(params.limit) ? params.limit : 20);
     }
 
     case 'market/mcp': {
       const query = requireString(params, 'query');
-      return await searchMcpRegistry(query, {
-        limit: Number.isInteger(params.limit) ? params.limit : 20,
-      });
+      return await marketMcp(query, Number.isInteger(params.limit) ? params.limit : 20);
     }
 
     case 'market/install_skill': {
@@ -1086,16 +1109,18 @@ function managerTool(paths) {
           return result.health;
         }
         case 'market_search_skills': {
-          return await searchSkillMarket(requireString(params, 'query'), {
-            limit: Number.isInteger(params.limit) ? params.limit : 20,
-          });
+          return await marketSkills(
+            requireString(params, 'query'),
+            Number.isInteger(params.limit) ? params.limit : 20,
+          );
         }
         case 'market_install_skill':
           return pickState(await runAction(paths, 'market/install_skill', params));
         case 'market_search_mcp': {
-          return await searchMcpRegistry(requireString(params, 'query'), {
-            limit: Number.isInteger(params.limit) ? params.limit : 20,
-          });
+          return await marketMcp(
+            requireString(params, 'query'),
+            Number.isInteger(params.limit) ? params.limit : 20,
+          );
         }
         case 'market_install_mcp':
           return pickState(await runAction(paths, 'market/install_mcp', params));

@@ -11,6 +11,18 @@ then run `npm run bump:patch|minor|major` to cut a dated release section and upd
 
 ## [Unreleased]
 
+## [0.5.1] - 2026-10-27
+
+### Fixed
+
+- MCP market search no longer fails when the registry's slow `version=latest`
+  query times out: it retries the unfiltered list, keeps the entry flagged as latest
+  per server name, and caches searches for five minutes.
+
+### Changed
+
+- More reliable MCP market search with fallback and caching.
+
 ## [0.5.0] - 2026-10-27
 
 ### Added

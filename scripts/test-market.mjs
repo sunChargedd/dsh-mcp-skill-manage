@@ -135,6 +135,24 @@ assert.deepEqual(
 );
 console.log('ok - tree picking handles root-level and nested skills');
 
+// --- MCP registry fallback (slow version=latest) ---------------------------
+const fallbackCalls = [];
+const fallbackFetch = async (url) => {
+  fallbackCalls.push(String(url));
+  if (String(url).includes('version=latest')) throw new Error('timed out');
+  return jsonResponse({
+    servers: [
+      { server: { name: 'io.acme/one', title: 'One', version: '1.0.0', remotes: [{ type: 'streamable-http', url: 'https://one.test/mcp' }] }, _meta: { 'io.modelcontextprotocol.registry/official': { isLatest: false } } },
+      { server: { name: 'io.acme/one', title: 'One', version: '2.0.0', remotes: [{ type: 'streamable-http', url: 'https://one.test/mcp' }] }, _meta: { 'io.modelcontextprotocol.registry/official': { isLatest: true } } },
+      { server: { name: 'io.acme/two', title: 'Two', version: '0.1.0', remotes: [{ type: 'streamable-http', url: 'https://two.test/mcp' }] }, _meta: { 'io.modelcontextprotocol.registry/official': { isLatest: true } } },
+    ],
+  });
+};
+const fallback = await searchMcpRegistry('acme', { fetchImpl: fallbackFetch, limit: 5 });
+assert.deepEqual(fallback.results.map((entry) => entry.version), ['2.0.0', '0.1.0']);
+assert.equal(fallbackCalls.length, 2, 'primary attempt then fallback');
+console.log('ok - MCP registry falls back to a deduplicated unfiltered list');
+
 // --- MCP registry search + install planning --------------------------------
 const mcpSearch = await searchMcpRegistry('acme', { fetchImpl: fakeFetch, limit: 5 });
 assert.equal(mcpSearch.results.length, 2);

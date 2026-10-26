@@ -31,6 +31,9 @@
 ### Skills
 
 - 卡片网格浏览，搜索、按工具过滤；点击进入全宽详情页编辑，返回保留筛选。
+- **全文搜索**：工具栏「搜索正文」直接搜 `SKILL.md` 正文，卡片显示命中片段与命中次数。
+- **批量操作**：多选后可一次「共享到某个根目录 / 导出为一个 zip / 删除（内联确认）」。
+- **新建模板**：空白、代码审查、文档撰写、问题排查，一键填好 frontmatter 与正文。
 - 完整编辑 frontmatter：`name`、`description`、`whenToUse`、`metadata`、`disable-model-invocation`、`user-invocable`，以及 Markdown 正文。
 - 支持目录式 `<name>/SKILL.md` 与扁平 `<name>.md`；重命名自动维护已建立的符号链接。
 - **跨工具共享**：勾选工具即创建相对符号链接（与 `~/.claude/skills -> ~/.agents/skills` 的常见做法一致），单一主副本，不复制多份。
@@ -41,9 +44,10 @@
 ### MCP
 
 - 表格视图：服务器 / 传输方式 / 命令或 URL / 目标 / 状态；行内开关直接启停，行内可删除、打开配置位置、测试连接。
+- **快速添加模板**：Context7 / Filesystem / GitHub / SQLite / Playwright 一键填好 transport、command/url 与 env 占位。
 - stdio（command/args/env/cwd）与 HTTP/SSE（url/headers）两种传输；支持重命名。
 - **跨工具复制**：把某个 server 一键复制到其它工具配置（同名已存在则跳过）。
-- **连接体检**：真实执行一次 MCP 握手，显示工具数量、延迟、server 名称版本与工具名，或具体失败原因；超时 8 秒，失败不修改配置。
+- **连接体检**：真实执行一次 MCP 握手，显示工具数量、延迟、server 名称版本与工具名，或具体失败原因；体检通过后详情页会列出全部工具。
 - env/headers 默认打码，点「显示内容」才展开。
 - 只修改目标条目，其它行尽量保持原样；写前备份、原子写入；解析失败拒绝写入而不是覆盖。
 
@@ -57,7 +61,7 @@
 - **项目管理**：添加项目路径后自动纳入其项目级 skill / MCP 配置。
 - **自定义位置**：任意 skill 目录、任意 JSON / JSONC / TOML / YAML-patch MCP 配置文件都可手动接入。
 - **诊断**：汇总非法 skill、坏链接、同名冲突、不可读配置等问题。
-- **Agent 工具**：`mcp_skill_manager` 把页面能力开放给模型（`overview`、`list_skills`、`read_skill`、`save_skill`、`delete_skill`、`set_skill_visibility`、`list_mcp`、`save_mcp`、`delete_mcp`、`copy_mcp`、`list_backups`、`restore_backup`、`export_skills`、`import_skill`、`mcp_health`、`doctor`），与页面走同一套 Host 逻辑。
+- **Agent 工具**：`mcp_skill_manager` 把页面能力开放给模型（`overview`、`list_skills`、`read_skill`、`save_skill`、`delete_skill`、`set_skill_visibility`、`search_skills`、`list_mcp`、`save_mcp`、`delete_mcp`、`copy_mcp`、`list_backups`、`restore_backup`、`export_skills`、`import_skill`、`mcp_health`、`doctor`），与页面走同一套 Host 逻辑。
 - 深色 / 浅色主题、窄屏自适应，全部使用 DSH 主题 token。
 
 ## 支持的工具
@@ -175,9 +179,9 @@ npm test
 | 命令 | 说明 |
 | --- | --- |
 | `npm run check` | 所有源文件语法检查 |
-| `npm run test:adapters` | 数据层（304 项，临时 HOME） |
+| `npm run test:adapters` | 数据层（临时 HOME） |
 | `npm run test:tools` | zip 与 MCP 探针 |
-| `npm run test:actions` | Host action 端到端（含真实 stdio MCP 握手、备份恢复、zip 往返） |
+| `npm run test:actions` | Host action 端到端（含真实 stdio MCP 握手、备份恢复、zip 往返、全文搜索） |
 | `npm run test:render` | 无头渲染 UI（临时 HOME，覆盖列表→详情→返回、快捷操作、备份页） |
 | `npm test` | 以上全部 |
 

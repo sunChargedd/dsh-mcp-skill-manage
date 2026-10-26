@@ -100,10 +100,12 @@ function renderNode(node, key) {
     return renderNode(output, key);
   }
   const text = renderNode(props.children, `${key}/${type}`);
+  const fieldValue =
+    (type === 'input' || type === 'textarea') && typeof props.value === 'string' ? props.value : '';
   if ((type === 'button' || props.role === 'button') && typeof props.onClick === 'function') {
     clicks.push({ text, title: props.title ?? '', onClick: props.onClick });
   }
-  return text;
+  return text + fieldValue;
 }
 
 /** Run queued effects whose dependencies changed. */
@@ -207,6 +209,12 @@ try {
   await writeFile(
     join(skillDir, 'SKILL.md'),
     '---\nname: render-skill\ndescription: Render smoke test skill\n---\n\n# Render skill\n\nBody text.\n',
+  );
+  const secondSkill = join(env.DSH_AGENTS_HOME, 'skills', 'render-skill-two');
+  await mkdir(secondSkill, { recursive: true });
+  await writeFile(
+    join(secondSkill, 'SKILL.md'),
+    '---\nname: render-skill-two\ndescription: Second render fixture\n---\n\n# Two\n\nAnother body.\n',
   );
   await mkdir(join(env.DSH_PROFILE_DIR), { recursive: true });
   await writeFile(join(env.DSH_PROFILE_DIR, 'cordis.patch.yml'), '[]\n');
@@ -333,6 +341,7 @@ assert.ok(html.includes('导出'), 'skills export action renders');
 
 assert.ok(clicks.some((entry) => entry.title === '打开配置所在位置'), 'card reveal action renders');
 assert.equal(clicks.some((entry) => entry.title === '复制一份'), false, 'duplicate quick action is gone');
+assert.ok(html.includes('搜索正文'), 'body search toggle renders');
 console.log('ok - skills list renders with real data, quick actions included');
 
 // --- Skill detail -----------------------------------------------------------
@@ -348,6 +357,16 @@ html = await clickTab('Skills');
 assert.ok(html.includes('新建 Skill'), 'back returns to the skills list');
 console.log('ok - skill detail back navigation works');
 
+// --- Skill templates --------------------------------------------------------
+html = await clickTab('新建 Skill');
+assert.ok(html.includes('模板'), 'skill template section renders');
+assert.ok(html.includes('代码审查'), 'skill template chips render');
+html = await clickContains('代码审查');
+assert.ok(html.includes('code-review'), 'applying a skill template fills the name');
+assert.ok(html.includes('Review a diff'), 'applying a skill template fills the description');
+html = await clickTab('Skills');
+console.log('ok - skill templates prefill the editor');
+
 // --- MCP list ---------------------------------------------------------------
 html = await clickTab('MCP');
 const expectedServer = state.mcpServers[0]?.name;
@@ -357,6 +376,14 @@ assert.ok(html.includes('添加服务器'), 'MCP toolbar renders');
 assert.ok(html.includes('已启用') || html.includes('已禁用'), 'MCP rows show their enabled state in words');
 assert.ok(clicks.some((entry) => entry.title === '测试连接'), 'MCP health action renders');
 console.log('ok - MCP list renders with real data');
+
+// --- MCP templates ----------------------------------------------------------
+html = await clickTab('添加服务器');
+assert.ok(html.includes('Context7'), 'MCP template chips render');
+html = await clickContains('Context7');
+assert.ok(html.includes('https://mcp.context7.com/mcp'), 'applying an MCP template fills the URL');
+html = await clickTab('MCP');
+console.log('ok - MCP templates prefill the editor');
 
 // --- MCP detail -------------------------------------------------------------
 html = await clickContains(expectedServer);
@@ -383,6 +410,21 @@ assert.ok(html.includes('恢复'), 'backup restore actions render');
 assert.ok(html.includes(state.backups[0]?.entries?.[0]?.name ?? ''), 'backup entry names render');
 assert.ok(html.includes('打开备份目录'), 'backup reveal action renders');
 console.log('ok - backups page renders real snapshots');
+
+// --- Bulk selection & delete ------------------------------------------------
+html = await clickTab('Skills');
+html = await clickTab('批量');
+assert.ok(html.includes('已选择 0 项'), 'bulk bar renders with an empty selection');
+html = await clickContains('render-skill-two');
+assert.ok(html.includes('已选择 1 项'), 'clicking a card toggles its selection');
+html = await clickContains('删除');
+assert.ok(html.includes('删除 1 项？'), 'bulk delete asks for confirmation');
+html = await clickContains('删除 1 项？');
+assert.ok(html.includes('已删除 1 个 skill'), 'bulk delete reports how many skills were removed');
+assert.equal(html.includes('render-skill-two'), false, 'bulk-deleted skill is gone');
+assert.ok(html.includes('render-skill'), 'other skills stay in the list');
+assert.ok(html.includes('批量'), 'selection mode ends after the bulk action');
+console.log('ok - bulk selection and delete work');
 
 // --- Quick delete stays on the list (no card-click navigation) --------------
 html = await clickTab('Skills');

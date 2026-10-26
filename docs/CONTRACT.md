@@ -284,7 +284,8 @@ Actions (every mutation returns the refreshed snapshot as `state`, so the page n
 - `skill/read` `{ skillKey }` → `{ skill, body }`
 - `skill/save` `{ skillKey?, targetRootId?, name, description, whenToUse?, metadata?, modelInvocable?, userInvocable?, body, extraRaw?, renameFrom?, visibility?: string[] }` → `{ key, state }`
 - `skill/delete` `{ skillKey }` → `{ removed, backup, state }`
-- `skill/reveal` `{ skillKey }` → `{ result }` (reveals the skill's `SKILL.md` in the OS file manager)
+- `skill/reveal` `{ skillKey }` → `{ result }`
+- `skill/search` `{ query, limit? }` → `{ query, results: [{ skillKey, name, matches: [{ line, text }] }], scanned }` (reveals the skill's `SKILL.md` in the OS file manager)
 - `skill/visibility` `{ skillKey, roots: string[] }` → `{ changed, warnings, state }`
 - `skill/duplicate` `{ skillKey, targetRootId, name }` → `{ key, changed, state }`
 - `mcp/save` `{ targetId, name, originalName?, server }` → `{ state }`
@@ -298,6 +299,7 @@ Actions (every mutation returns the refreshed snapshot as `state`, so the page n
 - `custom/add_mcp_target` `{ path, format, keyPath?, style?, label? }` → `{ state }`
 - `custom/remove_mcp_target` `{ id }` → `{ state }`
 - `skill/reveal` `{ skillKey }` → `{ result }`
+- `skill/search` `{ query, limit? }` → `{ query, results: [{ skillKey, name, matches: [{ line, text }] }], scanned }`
 - `skill/export` `{ skillKeys }` → `{ filename, base64, count }`
 - `skill/export_to_file` `{ skillKeys }` → `{ path, count }`
 - `skill/import_zip` `{ targetRootId, base64, filename? }` → `{ imported, warnings, state }`

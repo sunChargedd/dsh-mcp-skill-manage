@@ -31,6 +31,7 @@ import {
   resolvePaths,
   revealInFileManager,
   saveMcpServer,
+  searchSkillBodies,
   saveSkill,
   scanSkills,
   setSkillVisibility,
@@ -55,6 +56,7 @@ const TOOL_ACTIONS = [
   'save_skill',
   'delete_skill',
   'set_skill_visibility',
+  'search_skills',
   'list_mcp',
   'save_mcp',
   'delete_mcp',
@@ -409,6 +411,13 @@ async function runAction(paths, action, params) {
     case 'skill/delete': {
       const result = await deleteSkill({ ...scope, skillKey: requireString(params, 'skillKey') });
       return { ...result, state: await state() };
+    }
+
+    case 'skill/search': {
+      const query = requireString(params, 'query');
+      return await searchSkillBodies(paths, projects, custom, query, {
+        limit: Number.isInteger(params.limit) ? params.limit : 50,
+      });
     }
 
     case 'skill/reveal': {
@@ -921,6 +930,7 @@ function managerTool(paths) {
       },
       backupId: { type: 'string', description: 'Backup snapshot id from list_backups.' },
       path: { type: 'string', description: 'Absolute skill directory (or directory of skills) to import.' },
+      query: { type: 'string', description: 'Full-text query for search_skills (at least 2 characters).' },
     },
   };
   return {
@@ -967,6 +977,12 @@ function managerTool(paths) {
           return pickState(await runAction(paths, 'skill/delete', params));
         case 'set_skill_visibility':
           return pickState(await runAction(paths, 'skill/visibility', params));
+        case 'search_skills': {
+          const query = requireString(params, 'query');
+          return await searchSkillBodies(paths, (await loadSettings(paths)).projects, {}, query, {
+            limit: Number.isInteger(params.limit) ? params.limit : 20,
+          });
+        }
         case 'list_mcp': {
           const state = await buildState(paths, await loadSettings(paths));
           return {

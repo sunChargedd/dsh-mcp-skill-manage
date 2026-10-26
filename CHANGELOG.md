@@ -11,6 +11,28 @@ then run `npm run bump:patch|minor|major` to cut a dated release section and upd
 
 ## [Unreleased]
 
+## [0.4.0] - 2026-10-27
+
+### Added
+
+- **Full-text skill search**: new `skill/search` Host action and `search_skills` agent
+  tool; the skills toolbar gains a "Body" toggle that searches inside `SKILL.md` bodies,
+  shows matching snippets on the cards and a hit count.
+- **Bulk operations**: select multiple skill cards, then share them to a skill root,
+  export them as one zip, or delete them with a single inline confirmation.
+- **Starter templates**: new skills can start from Blank / Code review / Documentation /
+  Debugging; new MCP servers from Context7 / Filesystem / GitHub / SQLite / Playwright.
+- MCP detail pages list the tools reported by the latest health check.
+
+### Tests
+
+- Action suite covers full-text search and the `search_skills` tool.
+- Render suite covers template prefill, bulk selection/delete and the body-search toggle.
+
+### Changed
+
+- Full-text search, bulk operations and starter templates.
+
 ## [0.3.0] - 2026-10-27
 
 ### Changed
@@ -19,15 +41,13 @@ then run `npm run bump:patch|minor|major` to cut a dated release section and upd
   (`dsh-mcp-skill-manager` was already taken on npm). `package.json` is publishable
   (`private: false`, `publishConfig.access: public`); the client module id and the
   loader row name follow the package name.
-- Rename to dsh-mcp-skill-manage and prepare the first npm release.
-
 ### Added
 
 - `docs/release-notes/<version>.md`: curated (bilingual) release notes; the Release
   workflow's `scripts/release-notes.mjs` prefers them over the generated CHANGELOG
   section.
-- `market/index.json`: self-hosted format-1 market index for v0.2.2 (git source pinned
-  to the release commit), validated with DSH's own index validator.
+- `market/index.json`: self-hosted format-1 market index (git source pinned to the
+  release commit), validated with DSH's own index validator.
 
 ## [0.2.2] - 2026-10-27
 

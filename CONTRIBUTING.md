@@ -69,7 +69,7 @@ recomposition; a plain page refresh (Cmd/Ctrl+R) reloads the client half.
 
 ```bash
 npm test                # everything (syntax + 4 suites)
-npm run test:adapters   # filesystem data layer (304 checks)
+npm run test:adapters   # filesystem data layer
 npm run test:tools      # zip + MCP probe
 npm run test:actions    # Host actions end-to-end (temp HOME)
 npm run test:render     # headless render of the page (temp HOME)

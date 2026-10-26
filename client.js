@@ -35,6 +35,9 @@ window.__ModuleLoader__.load({
       'tab.mcp': 'MCP',
       'tab.settings': 'Settings & Doctor',
       'search.placeholder': 'Search name or description',
+      'search.body': 'Body',
+      'search.searching': 'Searching…',
+      'search.matches': '{count} body hits',
       'filter.all': 'All',
       'new.skill': 'New skill',
       'new.mcp': 'Add server',
@@ -108,6 +111,9 @@ window.__ModuleLoader__.load({
       'transport.stdio': 'stdio',
       'transport.http': 'http',
       'transport.sse': 'sse',
+      'section.templates': 'Templates',
+      'section.templatesHint': 'Start from a common server.',
+      'section.tools': 'Tools',
       'section.basic': 'Basics',
       'section.body': 'Content',
       'section.visibility': 'Visibility',
@@ -115,6 +121,14 @@ window.__ModuleLoader__.load({
       'section.secrets': 'Environment & headers',
       'section.copy': 'Copy to other tools',
       'empty.filter': 'No matches',
+      'bulk.select': 'Select',
+      'bulk.cancel': 'Done',
+      'bulk.selected': '{count} selected',
+      'bulk.share': 'Share',
+      'bulk.shareTarget': 'Add to',
+      'bulk.confirmDelete': 'Delete {count}?',
+      'bulk.deleted': 'Deleted {count} skill(s).',
+      'bulk.shared': 'Shared {count} skill(s).',
       'empty.mcpTitle': 'No MCP servers yet',
       'empty.skillsTitle': 'No skills found',
       'empty.add': 'Add one',
@@ -159,6 +173,9 @@ window.__ModuleLoader__.load({
       'tab.mcp': 'MCP',
       'tab.settings': '设置与诊断',
       'search.placeholder': '搜索名称或描述',
+      'search.body': '搜索正文',
+      'search.searching': '搜索中…',
+      'search.matches': '正文 {count} 处',
       'filter.all': '全部',
       'new.skill': '新建 Skill',
       'new.mcp': '添加服务器',
@@ -232,6 +249,9 @@ window.__ModuleLoader__.load({
       'transport.stdio': 'stdio',
       'transport.http': 'http',
       'transport.sse': 'sse',
+      'section.templates': '模板',
+      'section.templatesHint': '从常用服务器开始。',
+      'section.tools': '工具',
       'section.basic': '基本信息',
       'section.body': '内容',
       'section.visibility': '可见性',
@@ -239,6 +259,14 @@ window.__ModuleLoader__.load({
       'section.secrets': '环境变量与请求头',
       'section.copy': '复制到其他工具',
       'empty.filter': '没有匹配项',
+      'bulk.select': '批量',
+      'bulk.cancel': '完成',
+      'bulk.selected': '已选择 {count} 项',
+      'bulk.share': '共享',
+      'bulk.shareTarget': '共享到',
+      'bulk.confirmDelete': '删除 {count} 项？',
+      'bulk.deleted': '已删除 {count} 个 skill。',
+      'bulk.shared': '已共享 {count} 个 skill。',
       'empty.mcpTitle': '还没有 MCP 服务器',
       'empty.skillsTitle': '没有找到 skill',
       'empty.add': '新建一个',
@@ -806,7 +834,12 @@ window.__ModuleLoader__.load({
 .msm-tabCount.warn{color:var(--dsw-alias-state-warn-primary)}
 .msm-page{flex:1;min-height:0;overflow:auto;padding:20px 28px 56px}
 .msm-pageInner{max-width:1200px}
-.msm-toolbar{display:flex;align-items:center;gap:10px;margin-bottom:18px}
+.msm-toolbar{display:flex;align-items:center;gap:10px;margin-bottom:18px;flex-wrap:wrap}
+.msm-bulkBar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:10px 12px;margin-bottom:14px;border:.5px solid var(--dsw-alias-border-l2);border-radius:var(--dsw-radius-md);background:var(--dsw-alias-bg-layer-1)}
+.msm-bulkBar .msm-selectWrap{flex:0 0 200px;width:200px}
+.msm-selectMark{flex:0 0 auto;display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;border-radius:5px;border:.5px solid var(--dsw-alias-border-l3);background:transparent;color:var(--dsw-alias-label-primary-foreground);font-size:11px;line-height:1}
+.msm-selectMark.on{background:var(--dsw-alias-brand-primary);border-color:transparent}
+.msm-skillCard.selected{border-color:var(--dsw-alias-brand-primary)}
 .msm-toolbar .msm-searchWrap{max-width:320px;flex:1}
 .msm-toolbar .msm-selectWrap{flex:0 0 168px;width:168px}
 .msm-toolbarSpacer{flex:1}
@@ -976,6 +1009,119 @@ window.__ModuleLoader__.load({
       };
     }
 
+    /** Starter templates for a new skill. */
+    const SKILL_TEMPLATES = [
+      {
+        id: 'blank',
+        label: { en: 'Blank', zh: '空白' },
+        name: '',
+        description: '',
+        body: '# New skill\n\nExplain when to use this skill and how to apply it.\n',
+      },
+      {
+        id: 'review',
+        label: { en: 'Code review', zh: '代码审查' },
+        name: 'code-review',
+        description: 'Review a diff or a change set for correctness, clarity and missing tests.',
+        body: [
+          '# Code review',
+          '',
+          'Review the supplied diff or change set.',
+          '',
+          '- Check correctness and edge cases first.',
+          '- Flag missing tests, error handling and unintended behavior changes.',
+          '- Keep style comments secondary and specific.',
+          '- End with a short list of blocking vs non-blocking findings.',
+        ].join('\n'),
+      },
+      {
+        id: 'docs',
+        label: { en: 'Documentation', zh: '文档撰写' },
+        name: 'docs-writer',
+        description: 'Write or update developer documentation for a module, command or workflow.',
+        body: [
+          '# Documentation writer',
+          '',
+          'Read the relevant source before writing.',
+          '',
+          '- Lead with what the reader can do, then explain how.',
+          '- Include one runnable example and one failure example.',
+          '- Link to the exact files instead of duplicating code.',
+        ].join('\n'),
+      },
+      {
+        id: 'debug',
+        label: { en: 'Debugging', zh: '问题排查' },
+        name: 'debug-helper',
+        description: 'Investigate a failing command, test or runtime error down to a root cause.',
+        body: [
+          '# Debug helper',
+          '',
+          'Reproduce the failure before changing anything, then form one hypothesis at a time.',
+          '',
+          '- Capture the exact command, environment and error text.',
+          '- Narrow the failure with logging or a minimal reproduction.',
+          '- Fix the root cause and add a regression test.',
+        ].join('\n'),
+      },
+    ];
+
+    /** Starter templates for a new MCP server. */
+    const MCP_TEMPLATES = [
+      {
+        id: 'context7',
+        label: { en: 'Context7', zh: 'Context7 文档' },
+        description: { en: 'Docs lookup over Streamable HTTP.', zh: 'HTTP 文档检索服务。' },
+        server: { name: 'context7', transport: 'http', url: 'https://mcp.context7.com/mcp' },
+      },
+      {
+        id: 'filesystem',
+        label: { en: 'Filesystem', zh: '文件系统' },
+        description: { en: 'Local filesystem access; replace the path argument.', zh: '本地文件访问；替换路径参数。' },
+        server: {
+          name: 'filesystem',
+          transport: 'stdio',
+          command: 'npx',
+          args: '-y\n@modelcontextprotocol/server-filesystem\n/path/to/directory',
+        },
+      },
+      {
+        id: 'github',
+        label: { en: 'GitHub', zh: 'GitHub' },
+        description: { en: 'Repository tools; fill in GITHUB_TOKEN.', zh: '仓库工具；填写 GITHUB_TOKEN。' },
+        server: {
+          name: 'github',
+          transport: 'stdio',
+          command: 'npx',
+          args: '-y\n@modelcontextprotocol/server-github',
+          env: 'GITHUB_TOKEN=',
+        },
+      },
+      {
+        id: 'sqlite',
+        label: { en: 'SQLite', zh: 'SQLite' },
+        description: { en: 'Query a local SQLite database; replace the path.', zh: '查询本地 SQLite 数据库；替换路径。' },
+        server: {
+          name: 'sqlite',
+          transport: 'stdio',
+          command: 'npx',
+          args: '-y\n@modelcontextprotocol/server-sqlite\n/path/to/database.sqlite',
+        },
+      },
+      {
+        id: 'playwright',
+        label: { en: 'Playwright', zh: 'Playwright' },
+        description: { en: 'Browser automation tools.', zh: '浏览器自动化工具。' },
+        server: { name: 'playwright', transport: 'stdio', command: 'npx', args: '-y\n@playwright/mcp@latest' },
+      },
+    ];
+
+    /** Localized template label/description. */
+    function templateText(value, locale) {
+      if (typeof value === 'string') return value;
+      return (locale === 'zh' && value.zh) || value.en || value.zh || '';
+    }
+
     /** Roots that can receive a symlink for a skill (user/shared/custom, not project). */
     function linkableRoots(roots, canonicalRootId) {
       return roots.filter(
@@ -996,6 +1142,14 @@ window.__ModuleLoader__.load({
       const [pending, setPending] = React.useState(null);
       const [confirming, setConfirming] = React.useState(null);
       const [notice, setNotice] = React.useState(null);
+      const [bodySearch, setBodySearch] = React.useState(false);
+      const [bodyMatches, setBodyMatches] = React.useState({});
+      const [searching, setSearching] = React.useState(false);
+      const [selecting, setSelecting] = React.useState(false);
+      const [selected, setSelected] = React.useState([]);
+      const [bulkRoot, setBulkRoot] = React.useState('agents:user');
+      const [bulkConfirm, setBulkConfirm] = React.useState(false);
+      const [bulkBusy, setBulkBusy] = React.useState(false);
       const importRef = React.useRef(null);
       const { search, tool } = filter;
 
@@ -1010,14 +1164,46 @@ window.__ModuleLoader__.load({
         }
       }
 
+      React.useEffect(() => {
+        const term = search.trim();
+        if (!bodySearch || term.length < 2) {
+          setBodyMatches({});
+          setSearching(false);
+          return undefined;
+        }
+        let alive = true;
+        setSearching(true);
+        const timer = setTimeout(() => {
+          manager
+            .run('skill/search', { query: term, limit: 100 })
+            .then((value) => {
+              if (!alive) return;
+              const map = {};
+              for (const item of value?.results ?? []) map[item.skillKey] = item.matches ?? [];
+              setBodyMatches(map);
+            })
+            .catch(() => {
+              if (alive) setBodyMatches({});
+            })
+            .finally(() => {
+              if (alive) setSearching(false);
+            });
+        }, 240);
+        return () => {
+          alive = false;
+          clearTimeout(timer);
+        };
+      }, [bodySearch, search, manager.run]);
+
       const query = search.trim().toLowerCase();
+      const bodyHitKeys = new Set(Object.keys(bodyMatches));
       const skills = state.skills.filter((skill) => {
         if (tool !== 'all' && skill.visibility[tool] === null) return false;
         if (query.length === 0) return true;
-        return (
+        const textHit =
           skill.name.toLowerCase().includes(query) ||
-          (skill.description ?? '').toLowerCase().includes(query)
-        );
+          (skill.description ?? '').toLowerCase().includes(query);
+        return textHit || bodyHitKeys.has(skill.key);
       });
 
       const reveal = async (skill) => {
@@ -1069,6 +1255,76 @@ window.__ModuleLoader__.load({
         }
       };
 
+      const toggleSelected = (key) => {
+        setBulkConfirm(false);
+        setSelected((current) =>
+          current.includes(key) ? current.filter((item) => item !== key) : [...current, key],
+        );
+      };
+
+      const leaveSelection = () => {
+        setSelecting(false);
+        setSelected([]);
+        setBulkConfirm(false);
+      };
+
+      const bulkShare = async () => {
+        if (selected.length === 0) return;
+        setBulkBusy(true);
+        let count = 0;
+        try {
+          for (const key of selected) {
+            const skill = state.skills.find((entry) => entry.key === key);
+            if (!skill) continue;
+            const roots = [...new Set([...skill.roots.map((root) => root.rootId), bulkRoot])];
+            await manager.run('skill/visibility', { skillKey: key, roots });
+            count += 1;
+          }
+          flash(t('bulk.shared', { count }));
+          leaveSelection();
+        } catch {
+          /* the page-level error banner reports it */
+        } finally {
+          setBulkBusy(false);
+        }
+      };
+
+      const bulkExport = async () => {
+        if (selected.length === 0) return;
+        setBulkBusy(true);
+        try {
+          const value = await manager.run('skill/export', { skillKeys: selected });
+          if (value?.filename && value?.base64) downloadBase64(value.filename, value.base64);
+          flash(t('export.done'));
+        } catch {
+          /* the page-level error banner reports it */
+        } finally {
+          setBulkBusy(false);
+        }
+      };
+
+      const bulkDelete = async () => {
+        if (selected.length === 0) return;
+        if (!bulkConfirm) {
+          setBulkConfirm(true);
+          return;
+        }
+        setBulkBusy(true);
+        let count = 0;
+        try {
+          for (const key of selected) {
+            await manager.run('skill/delete', { skillKey: key });
+            count += 1;
+          }
+          flash(t('bulk.deleted', { count }));
+          leaveSelection();
+        } catch {
+          /* the page-level error banner reports it */
+        } finally {
+          setBulkBusy(false);
+        }
+      };
+
       const remove = async (skill) => {
         setConfirming(null);
         setPending(skill.key);
@@ -1105,8 +1361,21 @@ window.__ModuleLoader__.load({
                 ...tools.map((entry) => ({ value: entry, label: toolNames[entry] ?? entry })),
               ],
             }),
+            h(
+              Chip,
+              { on: bodySearch, onClick: () => setBodySearch((value) => !value) },
+              searching ? t('search.searching') : t('search.body'),
+            ),
             h('span', { className: 'msm-count' }, `${skills.length} / ${state.skills.length}`),
             h('span', { className: 'msm-toolbarSpacer' }),
+            h(
+              Button,
+              {
+                variant: selecting ? 'primary' : 'ghost',
+                onClick: () => (selecting ? leaveSelection() : setSelecting(true)),
+              },
+              selecting ? t('bulk.cancel') : t('bulk.select'),
+            ),
             h(
               'input',
               {
@@ -1123,6 +1392,34 @@ window.__ModuleLoader__.load({
             h(Button, { variant: 'ghost', onClick: () => void exportAll() }, t('action.export')),
             h(Button, { variant: 'primary', onClick: onCreate }, t('new.skill')),
           ),
+          selecting
+            ? h(
+                'div',
+                { className: 'msm-bulkBar' },
+                h('span', { className: 'msm-count' }, t('bulk.selected', { count: selected.length })),
+                h(
+                  Select,
+                  {
+                    value: bulkRoot,
+                    onChange: setBulkRoot,
+                    options: state.skillRoots
+                      .filter((root) => root.writable)
+                      .map((root) => ({ value: root.id, label: localized(root, locale) })),
+                  },
+                ),
+                h(Button, { disabled: bulkBusy || selected.length === 0, onClick: () => void bulkShare() }, t('bulk.share')),
+                h(Button, { disabled: bulkBusy || selected.length === 0, onClick: () => void bulkExport() }, t('action.export')),
+                h(
+                  Button,
+                  {
+                    variant: bulkConfirm ? 'danger' : undefined,
+                    disabled: bulkBusy || selected.length === 0,
+                    onClick: () => void bulkDelete(),
+                  },
+                  bulkConfirm ? t('bulk.confirmDelete', { count: selected.length }) : t('delete'),
+                ),
+              )
+            : null,
           notice ? h('div', { className: 'msm-toast' }, notice) : null,
           skills.length === 0
             ? h(Empty, {
@@ -1140,18 +1437,26 @@ window.__ModuleLoader__.load({
                       key: skill.key,
                       role: 'button',
                       tabIndex: 0,
-                      className: 'msm-skillCard',
-                      onClick: () => onOpen(skill.key),
+                      className: cx('msm-skillCard', selecting && selected.includes(skill.key) && 'selected'),
+                      onClick: () => (selecting ? toggleSelected(skill.key) : onOpen(skill.key)),
                       onKeyDown: (event) => {
                         if (event.key === 'Enter' || event.key === ' ') {
                           event.preventDefault();
-                          onOpen(skill.key);
+                          if (selecting) toggleSelected(skill.key);
+                          else onOpen(skill.key);
                         }
                       },
                     },
                     h(
                       'div',
                       { className: 'msm-skillCardHead' },
+                      selecting
+                        ? h(
+                            'span',
+                            { className: cx('msm-selectMark', selected.includes(skill.key) && 'on') },
+                            selected.includes(skill.key) ? '✓' : '',
+                          )
+                        : null,
                       h('span', { className: 'msm-avatar' }, monogram(skill.name)),
                       h(
                         'span',
@@ -1167,10 +1472,19 @@ window.__ModuleLoader__.load({
                         ),
                       ),
                       skill.roots.length > 1 ? h(Badge, { tone: 'brand' }, t('skill.link')) : null,
+                      bodyMatches[skill.key]?.length
+                        ? h(Badge, { tone: 'brand' }, t('search.matches', { count: bodyMatches[skill.key].length }))
+                        : null,
                       skill.valid ? null : h(Badge, { tone: 'warn' }, t('skill.invalid')),
                     ),
-                    h('span', { className: 'msm-skillDesc' }, skill.description || skill.error || ''),
-                    confirming === skill.key
+                    h(
+                      'span',
+                      { className: 'msm-skillDesc' },
+                      bodyMatches[skill.key]?.[0]?.text ?? (skill.description || skill.error || ''),
+                    ),
+                    selecting
+                      ? null
+                      : confirming === skill.key
                       ? h(
                           'div',
                           { className: 'msm-skillFoot' },
@@ -1269,6 +1583,15 @@ window.__ModuleLoader__.load({
       }, [isNew, skillKey, run]);
 
       const patch = (changes) => setDraft((current) => ({ ...current, ...changes }));
+      const applySkillTemplate = (template) => {
+        setDraft((current) => ({
+          ...current,
+          name: template.name,
+          description: template.description,
+          whenToUse: '',
+        }));
+        setBody(template.body);
+      };
       const candidates = linkableRoots(state.skillRoots, isNew ? draft.targetRootId : skill?.primaryRootId);
       const toggleVisible = (rootId) => {
         setVisible((current) =>
@@ -1394,6 +1717,32 @@ window.__ModuleLoader__.load({
             'div',
             { className: 'msm-detailBody' },
             message ? h(Note, { tone: message.tone }, message.text) : null,
+            isNew
+              ? h(
+                  'div',
+                  { className: 'msm-section' },
+                  h(
+                    'div',
+                    { className: 'msm-sectionHead' },
+                    h('span', { className: 'msm-sectionTitle' }, t('section.templates')),
+                  ),
+                  h(
+                    'div',
+                    { className: 'msm-inline' },
+                    SKILL_TEMPLATES.map((template) =>
+                      h(
+                        Chip,
+                        {
+                          key: template.id,
+                          on: draft.name === template.name && template.id !== 'blank',
+                          onClick: () => applySkillTemplate(template),
+                        },
+                        templateText(template.label, locale),
+                      ),
+                    ),
+                  ),
+                )
+              : null,
             isNew
               ? h(
                   'div',
@@ -1902,6 +2251,22 @@ window.__ModuleLoader__.load({
 
       const patch = (changes) => setDraft((current) => ({ ...current, ...changes }));
 
+      const applyMcpTemplate = (template) => {
+        const server = template.server;
+        setDraft((current) => ({
+          ...current,
+          name: server.name,
+          transport: server.transport,
+          command: server.command ?? '',
+          args: server.args ?? '',
+          url: server.url ?? '',
+          env: server.env ?? '',
+          headers: server.headers ?? '',
+          cwd: server.cwd ?? '',
+          enabled: true,
+        }));
+      };
+
       const check = async () => {
         setHealth({ status: 'checking' });
         try {
@@ -2040,6 +2405,25 @@ window.__ModuleLoader__.load({
                         })}${health.result?.serverInfo?.name ? ` · ${health.result.serverInfo.name}${health.result.serverInfo.version ? ` ${health.result.serverInfo.version}` : ''}` : ''}${health.result?.tools?.length ? ` · ${health.result.tools.slice(0, 8).join(', ')}` : ''}`
                       : t('health.failed', { error: health.result?.error ?? 'failed' }),
                 ),
+            health?.status === 'ok' && health.result?.tools?.length
+              ? h(
+                  'div',
+                  { className: 'msm-section' },
+                  h(
+                    'div',
+                    { className: 'msm-sectionHead' },
+                    h('span', { className: 'msm-sectionTitle' }, t('section.tools')),
+                    h('span', { className: 'msm-sectionHint' }, String(health.result.toolCount ?? health.result.tools.length)),
+                  ),
+                  h(
+                    'div',
+                    { className: 'msm-inline' },
+                    health.result.tools.map((toolName) =>
+                      h('span', { key: toolName, className: 'msm-toolPill' }, toolName),
+                    ),
+                  ),
+                )
+              : null,
             isNew
               ? null
               : h(
@@ -2052,6 +2436,33 @@ window.__ModuleLoader__.load({
                   ),
                   h('span', { className: 'msm-code' }, target ? target.path : ''),
                 ),
+            isNew
+              ? h(
+                  'div',
+                  { className: 'msm-section' },
+                  h(
+                    'div',
+                    { className: 'msm-sectionHead' },
+                    h('span', { className: 'msm-sectionTitle' }, t('section.templates')),
+                    h('span', { className: 'msm-sectionHint' }, t('section.templatesHint')),
+                  ),
+                  h(
+                    'div',
+                    { className: 'msm-inline' },
+                    MCP_TEMPLATES.map((template) =>
+                      h(
+                        Chip,
+                        {
+                          key: template.id,
+                          on: draft.name === template.server.name,
+                          onClick: () => applyMcpTemplate(template),
+                        },
+                        templateText(template.label, locale),
+                      ),
+                    ),
+                  ),
+                )
+              : null,
             h(
               'div',
               { className: 'msm-section' },

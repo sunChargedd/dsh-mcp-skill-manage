@@ -285,6 +285,14 @@ try {
   assert.match(patchText, /id: ui-theme/);
   check('mcp editing the DSH patch keeps other entries and writes row disabled state');
 
+  // --- full-text search ------------------------------------------------------
+  const searchHits = await run('skill/search', { query: 'Edited body' });
+  assert.ok(searchHits.results.some((result) => result.name === 'beta'), 'body search finds the edited skill');
+  const searchMiss = await run('skill/search', { query: 'zzz-not-in-any-skill' });
+  assert.equal(searchMiss.results.length, 0);
+  await assert.rejects(() => run('skill/search', { query: 'x' }), /at least 2 characters/);
+  check('skill/search finds body text with snippets and rejects tiny queries');
+
   // --- export / import -------------------------------------------------------
   const exported = await run('skill/export', { skillKeys: [beta.key] });
   assert.ok(exported.base64 && exported.filename.endsWith('.zip'));
@@ -468,6 +476,8 @@ process.stdin.on('data', (chunk) => {
   assert.ok(listed.skills.some((skill) => skill.name === 'beta'));
   const readTool = await tool.execute({ action: 'read_skill', skillKey: beta.key });
   assert.match(readTool.body, /Edited body/);
+  const searched = await tool.execute({ action: 'search_skills', query: 'Edited body' });
+  assert.ok(searched.results.some((result) => result.name === 'beta'));
   const doctors = await tool.execute({ action: 'doctor' });
   assert.ok(Array.isArray(doctors.issues));
   await assert.rejects(() => tool.execute({ action: 'nope' }), /unknown action/);

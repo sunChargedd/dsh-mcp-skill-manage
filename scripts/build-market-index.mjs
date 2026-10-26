@@ -29,7 +29,7 @@ function option(name) {
   return value;
 }
 
-const repositoryUrl = 'https://github.com/sunChargedd/dsh-mcp-skill-manager';
+const repositoryUrl = 'https://github.com/sunChargedd/dsh-mcp-skill-manage';
 const version = option('version') ?? manifest.version;
 if (!/^\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?$/.test(version)) throw new Error(`invalid version: ${version}`);
 const commit = option('commit') ?? execFileSync('git', ['rev-parse', 'HEAD'], { cwd: root, encoding: 'utf8' }).trim();
@@ -60,7 +60,7 @@ const index = {
         en: 'Sidebar page for skills and MCP servers across agent tools: CRUD, cross-tool symlink sharing, import/export, backups, MCP health checks.',
         zh: '侧边栏页面统一管理多工具 skill 与 MCP：增删改查、跨工具共享、导入导出、备份恢复、连接体检。',
       },
-      icon: 'https://raw.githubusercontent.com/sunChargedd/dsh-mcp-skill-manager/main/icon.svg',
+      icon: 'https://raw.githubusercontent.com/sunChargedd/dsh-mcp-skill-manage/main/icon.svg',
       author: 'sunChargedd',
       homepage: `${repositoryUrl}#readme`,
       repository: { url: repositoryUrl },
@@ -85,4 +85,4 @@ const destination = join(root, 'market', 'index.json');
 await mkdir(dirname(destination), { recursive: true });
 await writeFile(destination, `${JSON.stringify(index, null, 2)}\n`, 'utf8');
 console.log(`market index written: market/index.json (v${version} @ ${commit.slice(0, 12)})`);
-console.log('raw URL: https://raw.githubusercontent.com/sunChargedd/dsh-mcp-skill-manager/main/market/index.json');
+console.log('raw URL: https://raw.githubusercontent.com/sunChargedd/dsh-mcp-skill-manage/main/market/index.json');

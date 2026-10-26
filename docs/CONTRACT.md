@@ -1,4 +1,4 @@
-# dsh-mcp-skill-manager — internal contract
+# dsh-mcp-skill-manage — internal contract
 
 Two independent work areas:
 

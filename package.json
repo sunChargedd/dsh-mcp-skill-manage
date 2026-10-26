@@ -1,6 +1,6 @@
 {
-  "name": "dsh-mcp-skill-manager",
-  "version": "0.2.2",
+  "name": "dsh-mcp-skill-manage",
+  "version": "0.3.0",
   "description": "MCP & Skill Manager — a DSH Web plugin that manages agent skills and MCP servers across DSH, Claude Code, Codex, Cursor and other agent tools from one sidebar page.",
   "keywords": [
     "dsh",
@@ -19,17 +19,17 @@
     "lingma",
     "codebuddy"
   ],
-  "homepage": "https://github.com/sunChargedd/dsh-mcp-skill-manager#readme",
+  "homepage": "https://github.com/sunChargedd/dsh-mcp-skill-manage#readme",
   "bugs": {
-    "url": "https://github.com/sunChargedd/dsh-mcp-skill-manager/issues"
+    "url": "https://github.com/sunChargedd/dsh-mcp-skill-manage/issues"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/sunChargedd/dsh-mcp-skill-manager.git"
+    "url": "git+https://github.com/sunChargedd/dsh-mcp-skill-manage.git"
   },
   "author": "Sun <sun@charged.asia>",
   "license": "MIT",
-  "private": true,
+  "private": false,
   "type": "module",
   "engines": {
     "node": ">=20"
@@ -74,5 +74,8 @@
         "@deepseek-ai/dsh-client-ui-layout"
       ]
     }
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }

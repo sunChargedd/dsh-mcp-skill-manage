@@ -11,6 +11,16 @@ then run `npm run bump:patch|minor|major` to cut a dated release section and upd
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-10-27
+
+### Changed
+
+- Renamed the distribution package and GitHub repository to `dsh-mcp-skill-manage`
+  (`dsh-mcp-skill-manager` was already taken on npm). `package.json` is publishable
+  (`private: false`, `publishConfig.access: public`); the client module id and the
+  loader row name follow the package name.
+- Rename to dsh-mcp-skill-manage and prepare the first npm release.
+
 ### Added
 
 - `docs/release-notes/<version>.md`: curated (bilingual) release notes; the Release

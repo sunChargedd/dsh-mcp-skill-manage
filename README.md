@@ -2,13 +2,13 @@
 
 <img src="icon.svg" width="96" height="96" alt="MCP & Skill Manager icon" />
 
-# dsh-mcp-skill-manager
+# dsh-mcp-skill-manage
 
 **一个侧边栏页面，管理所有 agent 工具的 skill 与 MCP 服务器。**
 
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Node](https://img.shields.io/badge/node-%3E%3D20-brightgreen)](package.json)
-[![CI](https://github.com/sunChargedd/dsh-mcp-skill-manager/actions/workflows/ci.yml/badge.svg)](https://github.com/sunChargedd/dsh-mcp-skill-manager/actions/workflows/ci.yml)
+[![CI](https://github.com/sunChargedd/dsh-mcp-skill-manage/actions/workflows/ci.yml/badge.svg)](https://github.com/sunChargedd/dsh-mcp-skill-manage/actions/workflows/ci.yml)
 [![DSH](https://img.shields.io/badge/DeepSeek%20Harness-plugin-4E7CF6)](https://github.com/deepseek-ai/deepseek-harness)
 
 **中文** | [English](README.en.md)
@@ -19,7 +19,7 @@
 
 ## 这是什么
 
-`dsh-mcp-skill-manager` 是 [DeepSeek Harness (DSH)](https://github.com/deepseek-ai/deepseek-harness) 的 Web 插件。它在你常用的 agent 工具（DSH、Claude Code、Codex、Cursor、Windsurf、Qoder、Trae、通义灵码、CodeBuddy、Qwen Code、iFlow、Kimi、OpenCode、Cline/Roo/Kilo）之间，统一管理两样东西：
+`dsh-mcp-skill-manage` 是 [DeepSeek Harness (DSH)](https://github.com/deepseek-ai/deepseek-harness) 的 Web 插件。它在你常用的 agent 工具（DSH、Claude Code、Codex、Cursor、Windsurf、Qoder、Trae、通义灵码、CodeBuddy、Qwen Code、iFlow、Kimi、OpenCode、Cline/Roo/Kilo）之间，统一管理两样东西：
 
 - **Skills**：`SKILL.md` 技能包，增删改查、正文编辑、跨工具共享（符号链接）、导入导出、备份恢复；
 - **MCP Servers**：stdio / HTTP 服务器配置，增删改查、启停、跨工具复制、连接体检、备份恢复。
@@ -102,7 +102,7 @@ plugin_manager action=install_bundle target=<仓库绝对路径>
 ```yaml
 - insert:
     - id: mcp-skill-manager
-      name: 'dsh-mcp-skill-manager'
+      name: 'dsh-mcp-skill-manage'
       config: {}
 ```
 
@@ -167,8 +167,8 @@ plugin_manager action=install_bundle target=<仓库绝对路径>
 要求 Node.js >= 20，无运行时依赖、无构建步骤。
 
 ```bash
-git clone https://github.com/sunChargedd/dsh-mcp-skill-manager.git
-cd dsh-mcp-skill-manager
+git clone https://github.com/sunChargedd/dsh-mcp-skill-manage.git
+cd dsh-mcp-skill-manage
 npm test
 ```
 

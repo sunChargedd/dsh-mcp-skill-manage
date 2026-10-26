@@ -133,7 +133,7 @@ const source = await readFile(new URL('../client.js', import.meta.url), 'utf8');
 let definition;
 globalThis.window = { __ModuleLoader__: { load(value) { definition = value; } } };
 new Function('window', source)(globalThis.window);
-assert.equal(definition?.id, 'dsh-mcp-skill-manager', 'client module registers under the package name');
+assert.equal(definition?.id, 'dsh-mcp-skill-manage', 'client module registers under the package name');
 
 const components = {};
 const dictionaries = {};

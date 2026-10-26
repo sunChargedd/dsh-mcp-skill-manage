@@ -2,13 +2,13 @@
 
 <img src="icon.svg" width="96" height="96" alt="MCP & Skill Manager icon" />
 
-# dsh-mcp-skill-manager
+# dsh-mcp-skill-manage
 
 **One sidebar page for every agent tool's skills and MCP servers.**
 
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Node](https://img.shields.io/badge/node-%3E%3D20-brightgreen)](package.json)
-[![CI](https://github.com/sunChargedd/dsh-mcp-skill-manager/actions/workflows/ci.yml/badge.svg)](https://github.com/sunChargedd/dsh-mcp-skill-manager/actions/workflows/ci.yml)
+[![CI](https://github.com/sunChargedd/dsh-mcp-skill-manage/actions/workflows/ci.yml/badge.svg)](https://github.com/sunChargedd/dsh-mcp-skill-manage/actions/workflows/ci.yml)
 
 [中文](README.md) | **English**
 
@@ -46,8 +46,8 @@ Then refresh the Web page: a plug icon named “MCP & Skills” appears in the l
 Node.js >= 20, zero runtime dependencies, no build step.
 
 ```bash
-git clone https://github.com/sunChargedd/dsh-mcp-skill-manager.git
-cd dsh-mcp-skill-manager
+git clone https://github.com/sunChargedd/dsh-mcp-skill-manage.git
+cd dsh-mcp-skill-manage
 npm test
 ```
 

@@ -1,4 +1,4 @@
 - insert:
     - id: mcp-skill-manager
-      name: 'dsh-mcp-skill-manager'
+      name: 'dsh-mcp-skill-manage'
       config: {}

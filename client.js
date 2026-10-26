@@ -9,7 +9,7 @@
  * IDs must match package.json: the factory id equals the package name.
  */
 window.__ModuleLoader__.load({
-  id: 'dsh-mcp-skill-manager',
+  id: 'dsh-mcp-skill-manage',
   factory(require) {
     const React = require('react');
     const h = React.createElement;

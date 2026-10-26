@@ -19,7 +19,7 @@ requests. Nothing is sent to a third party by this plugin.
 ## Reporting a vulnerability
 
 Please do **not** open a public issue for security problems. Use GitHub's private
-[security advisory](https://github.com/sunChargedd/dsh-mcp-skill-manager/security/advisories/new)
+[security advisory](https://github.com/sunChargedd/dsh-mcp-skill-manage/security/advisories/new)
 flow, or contact the maintainer at `sun@charged.asia`.
 
 Include: affected version, reproduction steps, impact, and any suggested fix. We aim to

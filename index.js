@@ -8,7 +8,7 @@
  * The filesystem data layer lives in `./lib/adapters.js`; this module owns settings,
  * snapshot composition, HTTP lifecycle, the profile-patch reload hint, and the tool.
  *
- * @module dsh-mcp-skill-manager
+ * @module dsh-mcp-skill-manage
  */
 import { createHash } from 'node:crypto';
 import { constants, existsSync } from 'node:fs';

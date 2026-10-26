@@ -563,7 +563,7 @@ async function main() {
 
     assert.ok(seen.initialize, 'initialize must reach the server');
     assert.equal(seen.initialize.body.params.protocolVersion, '2025-06-18');
-    assert.deepEqual(seen.initialize.body.params.clientInfo, { name: 'dsh-mcp-skill-manager', version: '0.1.0' });
+    assert.deepEqual(seen.initialize.body.params.clientInfo, { name: 'dsh-mcp-skill-manage', version: '0.1.0' });
     assert.equal(seen.initialize.headers.authorization, 'Bearer test-token');
     assert.equal(seen.initialize.headers['x-custom-header'], 'yes');
     assert.match(seen.initialize.headers['content-type'], /application\/json/);

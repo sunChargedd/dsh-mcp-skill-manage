@@ -20,7 +20,7 @@
   },
   "plugins": [
     {
-      "name": "dsh-mcp-skill-manager",
+      "name": "dsh-mcp-skill-manage",
       "title": {
         "en": "MCP & Skill Manager",
         "zh": "MCP 与技能管理"
@@ -29,11 +29,11 @@
         "en": "Sidebar page for skills and MCP servers across agent tools: CRUD, cross-tool symlink sharing, import/export, backups, MCP health checks.",
         "zh": "侧边栏页面统一管理多工具 skill 与 MCP：增删改查、跨工具共享、导入导出、备份恢复、连接体检。"
       },
-      "icon": "https://raw.githubusercontent.com/sunChargedd/dsh-mcp-skill-manager/main/icon.svg",
+      "icon": "https://raw.githubusercontent.com/sunChargedd/dsh-mcp-skill-manage/main/icon.svg",
       "author": "sunChargedd",
-      "homepage": "https://github.com/sunChargedd/dsh-mcp-skill-manager#readme",
+      "homepage": "https://github.com/sunChargedd/dsh-mcp-skill-manage#readme",
       "repository": {
-        "url": "https://github.com/sunChargedd/dsh-mcp-skill-manager"
+        "url": "https://github.com/sunChargedd/dsh-mcp-skill-manage"
       },
       "metadata": {
         "category": "tools",
@@ -53,7 +53,7 @@
           "publishTimestamp": 1793038330,
           "source": {
             "type": "git",
-            "url": "https://github.com/sunChargedd/dsh-mcp-skill-manager",
+            "url": "https://github.com/sunChargedd/dsh-mcp-skill-manage",
             "commit": "d73094783a2f3094c1dbb8e1ba29c5fe804af6d9"
           },
           "engines": {}

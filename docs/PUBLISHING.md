@@ -8,7 +8,7 @@
 | **GitHub-only 收录** | 仓库满足收录要求 + PR | 网站给出一条 `dsh plugin add` 命令 | 否（默认索引只收 npm 包） |
 | **npm 发布 + Awesome 索引** | npm 账号 + PR | Discover 里搜索一键安装 | 是 |
 
-> **当前阻塞**：npm 上的 `dsh-mcp-skill-manager` 已被别人占用（`user0054`，仓库 `chihy525/dsh-mcp-skill-manager`）。要进默认市场，必须先换一个可用的包名再发布。推荐用 npm scope，例如 `@<你的npm用户名>/dsh-mcp-skill-manager`。
+> **当前状态**：项目已从 `dsh-mcp-skill-manager` 改名为 **`dsh-mcp-skill-manage`**（旧 npm 名被其他作者占用），仓库、包名、client 模块 id 与 loader 行已全部同步；npm 包名已确认可用，`package.json` 已设置 `"private": false` 与 `"publishConfig": { "access": "public" }`。剩余步骤：`npm login` → `npm publish` → 仓库满 1 天后提交 Awesome PR。
 
 ---
 
@@ -17,14 +17,14 @@
 仓库里已经能生成 format-1 的市场索引，条目用 **git source** 安装，因此不依赖 npm：
 
 ```bash
-npm run market:build -- --version 0.2.2 --commit "$(git rev-parse 'v0.2.2^{commit}')"
+npm run market:build -- --version <version> --commit "$(git rev-parse 'v<version>^{commit}')"
 git add market/index.json && git commit -m "chore: refresh market index" && git push
 ```
 
 索引地址（用户加到 Settings → Plugins → Discover → Index sources）：
 
 ```text
-https://raw.githubusercontent.com/sunChargedd/dsh-mcp-skill-manager/main/market/index.json
+https://raw.githubusercontent.com/sunChargedd/dsh-mcp-skill-manage/main/market/index.json
 ```
 
 索引里 `source.commit` 固定到发布 commit；每次发新版本后重新生成一次即可。生成脚本：`scripts/build-market-index.mjs`。
@@ -41,13 +41,13 @@ https://raw.githubusercontent.com/sunChargedd/dsh-mcp-skill-manager/main/market/
 - 模板（放在本仓库 [market/awesome-plugin.yml](awesome-plugin.yml)，提交时复制到对方仓库）：
 
 ```yaml
-url: https://github.com/sunChargedd/dsh-mcp-skill-manager
-name: sunChargedd/dsh-mcp-skill-manager
+url: https://github.com/sunChargedd/dsh-mcp-skill-manage
+name: sunChargedd/dsh-mcp-skill-manage
 category: tools
 description:
   en: Manage skills and MCP servers across DSH, Claude Code, Codex, Cursor and other agent tools from one sidebar page.
   zh: 在 DSH 侧边栏统一管理 DSH、Claude Code、Codex、Cursor 等 agent 工具的 skill 与 MCP 服务器。
-icon: https://raw.githubusercontent.com/sunChargedd/dsh-mcp-skill-manager/main/icon.svg
+icon: https://raw.githubusercontent.com/sunChargedd/dsh-mcp-skill-manage/main/icon.svg
 ```
 
 PR 流程：
@@ -55,9 +55,9 @@ PR 流程：
 ```bash
 git clone https://github.com/<你的账号>/awesome-dsh-plugin.git
 cd awesome-dsh-plugin
-cp <本仓库>/market/awesome-plugin.yml data/plugins/sunChargedd__dsh-mcp-skill-manager.yml
-git checkout -b add/sunchargedd-dsh-mcp-skill-manager
-git add data/plugins && git commit -m "Add sunChargedd/dsh-mcp-skill-manager"
+cp <本仓库>/market/awesome-plugin.yml data/plugins/sunChargedd__dsh-mcp-skill-manage.yml
+git checkout -b add/sunchargedd-dsh-mcp-skill-manage
+git add data/plugins && git commit -m "Add sunChargedd/dsh-mcp-skill-manage"
 git push origin HEAD   # 然后在 GitHub 上开 PR
 ```
 
@@ -65,22 +65,15 @@ git push origin HEAD   # 然后在 GitHub 上开 PR
 
 ## 3. npm 发布（进入默认市场）
 
-### 3.1 换一个可用的包名
+### 3.1 包名与需要同步的三个位置
 
-发布前要统一改三处（它们必须完全一致，否则 loader 解析不到）：
+包名已确定为 `dsh-mcp-skill-manage`（npm 上可用）。改名前约定的规则仍然成立：下面三处必须完全一致，否则 loader 解析不到——
 
 1. `package.json` 的 `"name"`
 2. `client.js` 顶部 `window.__ModuleLoader__.load({ id: '...' })` 的 id
 3. `cordis.patch.yml` 中插件行的 `name:`
 
-另外要同步 README、`scripts/test-render.mjs` 里的模块 id 断言。推荐用 scope（需要在 npm 上拥有同名 user/org）：
-
-```jsonc
-// package.json
-"name": "@sunchargedd/dsh-mcp-skill-manager",
-"private": false,                       // ← 去掉 private
-"publishConfig": { "access": "public" } // scoped 包必须显式 public
-```
+另外 `scripts/test-render.mjs` 的模块 id 断言、`lib/probe.js` 的 CLIENT_INFO 也随包名更新。当前仓库已全部完成，无需再改。
 
 ### 3.2 发布
 

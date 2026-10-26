@@ -1,4 +1,4 @@
-# Contributing to dsh-mcp-skill-manager
+# Contributing to dsh-mcp-skill-manage
 
 Thanks for taking the time to contribute! This project is a zero-dependency DSH Web
 plugin, so setup is deliberately small.
@@ -17,8 +17,8 @@ Requirements: Node.js >= 20, and a DSH installation whose profile you can instal
 into.
 
 ```bash
-git clone https://github.com/sunChargedd/dsh-mcp-skill-manager.git
-cd dsh-mcp-skill-manager
+git clone https://github.com/sunChargedd/dsh-mcp-skill-manage.git
+cd dsh-mcp-skill-manage
 npm test
 ```
 

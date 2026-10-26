@@ -293,6 +293,73 @@ try {
   await assert.rejects(() => run('skill/search', { query: 'x' }), /at least 2 characters/);
   check('skill/search finds body text with snippets and rejects tiny queries');
 
+  // --- market search + install ----------------------------------------------
+  const realFetch = globalThis.fetch;
+  const jsonResponse = (value) => ({ ok: true, status: 200, json: async () => value });
+  const textResponse = (text) => ({ ok: true, status: 200, arrayBuffer: async () => new TextEncoder().encode(text).buffer });
+  const skillTree = {
+    tree: [
+      { path: 'skills/pdf/SKILL.md', type: 'blob', size: 60 },
+      { path: 'skills/pdf/references/guide.md', type: 'blob', size: 20 },
+    ],
+  };
+  globalThis.fetch = async (url) => {
+    const target = String(url);
+    if (target.startsWith('https://skills.sh/api/search')) {
+      return jsonResponse({
+        skills: [{ id: 'anthropics/skills/pdf', source: 'anthropics/skills', skillId: 'pdf', name: 'pdf', installs: 10 }],
+      });
+    }
+    if (target === 'https://api.github.com/repos/anthropics/skills') return jsonResponse({ default_branch: 'main' });
+    if (target.startsWith('https://api.github.com/repos/anthropics/skills/git/trees/main')) {
+      return jsonResponse(skillTree);
+    }
+    if (target.startsWith('https://raw.githubusercontent.com/anthropics/skills/main/')) {
+      return textResponse('---\nname: pdf\ndescription: Market installed pdf skill\n---\n\nBody\n');
+    }
+    if (target.startsWith('https://registry.modelcontextprotocol.io/v0/servers')) {
+      return jsonResponse({
+        servers: [
+          {
+            server: {
+              name: 'io.acme/remote',
+              title: 'Acme Remote',
+              description: 'Remote MCP server',
+              version: '1.0.0',
+              remotes: [{ type: 'streamable-http', url: 'https://mcp.acme.test/mcp' }],
+            },
+          },
+        ],
+      });
+    }
+    throw new Error(`unexpected fetch in test: ${target}`);
+  };
+  try {
+    const skillMarket = await run('market/skills', { query: 'pdf' });
+    assert.equal(skillMarket.results[0].source, 'anthropics/skills');
+    const marketSkill = await run('market/install_skill', {
+      source: 'anthropics/skills',
+      skillId: 'pdf',
+      targetRootId: 'agents:user',
+    });
+    assert.equal(marketSkill.imported.length, 1);
+    assert.ok(
+      await exists(path.join(root, '.agents', 'skills', marketSkill.imported[0].name, 'SKILL.md')),
+      'market skill is written to the target root',
+    );
+    const mcpMarket = await run('market/mcp', { query: 'acme' });
+    assert.equal(mcpMarket.results[0].remotes[0].url, 'https://mcp.acme.test/mcp');
+    const marketMcp = await run('market/install_mcp', {
+      targetId: 'cursor:user',
+      entry: mcpMarket.results[0],
+    });
+    const cursorAfterMarket = JSON.parse(await readFile(cursorConfig, 'utf8'));
+    assert.equal(cursorAfterMarket.mcpServers[marketMcp.name].url, 'https://mcp.acme.test/mcp');
+    check('market search + install works for skills and MCP servers');
+  } finally {
+    globalThis.fetch = realFetch;
+  }
+
   // --- export / import -------------------------------------------------------
   const exported = await run('skill/export', { skillKeys: [beta.key] });
   assert.ok(exported.base64 && exported.filename.endsWith('.zip'));

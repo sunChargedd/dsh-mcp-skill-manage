@@ -308,6 +308,10 @@ Actions (every mutation returns the refreshed snapshot as `state`, so the page n
 - `backup/delete` `{ backupId }` → `{ deleted, state }`
 - `backup/reveal` `{ backupId }` → `{ result }`
 - `mcp/health` `{ targetId, name, timeoutMs? }` → `{ health }`
+- `market/skills` `{ query, limit? }` → `{ query, results, count, source }`
+- `market/mcp` `{ query, limit? }` → `{ query, results, count, source }`
+- `market/install_skill` `{ source, skillId, targetRootId }` → `{ imported, warnings, source, skillId, state }`
+- `market/install_mcp` `{ targetId, entry | name }` → `{ name, warnings, state }`
 
 Snapshot:
 ```js

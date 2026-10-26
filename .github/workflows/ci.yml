@@ -27,6 +27,8 @@ jobs:
         run: npm run test:adapters
       - name: Utilities (zip + MCP probe)
         run: npm run test:tools
+      - name: Market adapters
+        run: npm run test:market
       - name: Host actions
         run: npm run test:actions
       - name: Headless UI render

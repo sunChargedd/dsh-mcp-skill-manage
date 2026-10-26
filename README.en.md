@@ -28,6 +28,7 @@ A [DeepSeek Harness (DSH)](https://github.com/deepseek-ai/deepseek-harness) Web 
 - **Backups & restore**: every delete and config write keeps a snapshot; restore a skill into any writable root or write a config snapshot back over its original file.
 - **Projects & custom locations**: track project directories to pick up project-level skills/MCP configs; add any skill directory or JSON/JSONC/TOML/YAML-patch MCP config manually.
 - **Diagnostics**: invalid frontmatter, broken symlinks, duplicate names, unreadable configs.
+- **Market**: search Agent Skills on [skills.sh](https://skills.sh) and MCP servers in the official MCP Registry, then install a whole skill bundle from its GitHub repository into any skills root, or add an MCP server (remote HTTP, or npx/uvx stdio with env placeholders) to any config. Also exposed as `market_search_skills` / `market_install_skill` / `market_search_mcp` / `market_install_mcp` agent-tool actions.
 - **Agent tool `mcp_skill_manager`**: the model can inspect and maintain the same data through the same Host action layer.
 - Theme-token styling, dark/light mode and narrow-window support.
 

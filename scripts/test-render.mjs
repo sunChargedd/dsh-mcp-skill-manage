@@ -404,6 +404,14 @@ assert.ok(html.includes('诊断'), 'diagnostics section renders');
 assert.ok(html.includes(state.mcpTargets[0]?.path ?? ''), 'detected target path renders');
 console.log('ok - settings & doctor page renders');
 
+// --- Market tab -------------------------------------------------------------
+html = await clickTab('市场');
+assert.ok(html.includes('Skills 市场'), 'skills market segment renders');
+assert.ok(html.includes('MCP 市场'), 'MCP market segment renders');
+assert.ok(html.includes('搜索'), 'market search action renders');
+assert.ok(html.includes('发现 skill 与 MCP'), 'market empty state renders');
+console.log('ok - market tab renders both sources');
+
 // --- Backups tab ------------------------------------------------------------
 html = await clickTab('备份');
 assert.ok(html.includes('恢复'), 'backup restore actions render');

@@ -51,6 +51,14 @@
 - env/headers 默认打码，点「显示内容」才展开。
 - 只修改目标条目，其它行尽量保持原样；写前备份、原子写入；解析失败拒绝写入而不是覆盖。
 
+### 市场（Skills / MCP）
+
+- **Skills 市场**：数据来自 [skills.sh](https://skills.sh) 的 Agent Skill 索引；搜索后可直接安装到任意 skill 根目录——从对应 GitHub 仓库下载整个 skill 目录（保留 references/scripts 等文件），不覆盖同名项。
+- **MCP 市场**：数据来自官方 [Model Context Protocol Registry](https://registry.modelcontextprotocol.io)；搜索结果可一键加入任意 MCP 配置：优先使用 registry 的 remote HTTP 端点，否则按 npm/pypi 包生成 `npx`/`uvx` stdio 配置，必填环境变量会以空值占位并提示。
+- 两个市场都在同一个「市场」标签页里，可切换来源、搜索关键字、选择安装目标；网络请求只在你主动搜索/安装时发生。
+- Agent 工具同步提供 `market_search_skills`、`market_install_skill`、`market_search_mcp`、`market_install_mcp`。
+- 可选：设置 `GITHUB_TOKEN` 环境变量可提高 GitHub API 速率限制（不设置也能用，匿名 60 次/小时）。
+
 ### 备份与恢复
 
 - 删除 skill、修改/删除 MCP 配置前自动留快照，保留最近 80 份。
@@ -61,7 +69,7 @@
 - **项目管理**：添加项目路径后自动纳入其项目级 skill / MCP 配置。
 - **自定义位置**：任意 skill 目录、任意 JSON / JSONC / TOML / YAML-patch MCP 配置文件都可手动接入。
 - **诊断**：汇总非法 skill、坏链接、同名冲突、不可读配置等问题。
-- **Agent 工具**：`mcp_skill_manager` 把页面能力开放给模型（`overview`、`list_skills`、`read_skill`、`save_skill`、`delete_skill`、`set_skill_visibility`、`search_skills`、`list_mcp`、`save_mcp`、`delete_mcp`、`copy_mcp`、`list_backups`、`restore_backup`、`export_skills`、`import_skill`、`mcp_health`、`doctor`），与页面走同一套 Host 逻辑。
+- **Agent 工具**：`mcp_skill_manager` 把页面能力开放给模型（`overview`、`list_skills`、`read_skill`、`save_skill`、`delete_skill`、`set_skill_visibility`、`search_skills`、`market_search_skills`、`market_install_skill`、`market_search_mcp`、`market_install_mcp`、`list_mcp`、`save_mcp`、`delete_mcp`、`copy_mcp`、`list_backups`、`restore_backup`、`export_skills`、`import_skill`、`mcp_health`、`doctor`），与页面走同一套 Host 逻辑。
 - 深色 / 浅色主题、窄屏自适应，全部使用 DSH 主题 token。
 
 ## 支持的工具
@@ -153,6 +161,7 @@ plugin_manager action=install_bundle target=<仓库绝对路径>
 | `lib/adapters.js` | 文件系统数据层：SKILL.md / JSON(C) / TOML / YAML-patch 读写、符号链接、备份恢复。 |
 | `lib/presets.js` | 各工具路径候选表（纯数据）。 |
 | `lib/zip.js` | 无依赖 zip 读写。 |
+| `lib/market.js` | skills.sh / MCP Registry 搜索与安装计划（可注入 fetch）。 |
 | `lib/probe.js` | MCP 连接探测。 |
 | `docs/CONTRACT.md` | Host / adapters / client 之间的内部契约。 |
 | `docs/PUBLISHING.md` | 发布、收录与市场索引指南。 |
@@ -164,6 +173,7 @@ plugin_manager action=install_bundle target=<仓库绝对路径>
 - 所有写操作：先备份 → 原子写入；文本配置只改目标条目，尽量保留其它内容。
 - 两条 Host 路由使用 `connection.requestRejection` 鉴权，未认证请求返回 401。
 - 插件本身不向外发送任何数据；「测试连接」只会访问你为该 MCP server 配置的地址或命令。
+- 「市场」只在主动搜索/安装时访问 skills.sh、GitHub API/raw 与 MCP Registry；安装的是第三方内容，运行前请自行审查。
 - DSH 的 MCP 修改写入当前 profile 的 patch 文件，由 loader 监听热生效。
 
 ## 开发
@@ -181,6 +191,7 @@ npm test
 | `npm run check` | 所有源文件语法检查 |
 | `npm run test:adapters` | 数据层（临时 HOME） |
 | `npm run test:tools` | zip 与 MCP 探针 |
+| `npm run test:market` | 市场搜索、skill 下载合并、MCP 安装计划（假网络） |
 | `npm run test:actions` | Host action 端到端（含真实 stdio MCP 握手、备份恢复、zip 往返、全文搜索） |
 | `npm run test:render` | 无头渲染 UI（临时 HOME，覆盖列表→详情→返回、快捷操作、备份页） |
 | `npm test` | 以上全部 |
@@ -213,6 +224,7 @@ npm test
 - JSONC 文件写入会丢失注释（写前有备份）；TOML 目前仅用于 Codex。
 - 直接在卡片/表格里的快捷删除**不会**再次弹窗，但会内联二次确认并保留备份。
 - MCP 体检会按配置真实启动进程或发起请求，请只对自己信任的 server 使用。
+- 市场安装不改写已有同名条目：skill 会自动加后缀，MCP server 名冲突会自动追加序号；匿名 GitHub API 有速率限制。
 
 ## 参与贡献
 

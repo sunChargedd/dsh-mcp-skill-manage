@@ -11,6 +11,28 @@ then run `npm run bump:patch|minor|major` to cut a dated release section and upd
 
 ## [Unreleased]
 
+## [0.5.0] - 2026-10-27
+
+### Added
+
+- **Market tab**: search Agent Skills on skills.sh and MCP servers in the official
+  Model Context Protocol registry, then install with one click.
+  - Skills are downloaded as a whole directory from their GitHub repository and
+    imported into any writable skills root (conflicts are renamed, never overwritten).
+  - MCP entries use the registry's remote HTTP endpoint when present, otherwise an
+    npm/pypi package is mapped to `npx`/`uvx` stdio config with required environment
+    variables pre-filled as placeholders and reported in the install toast.
+- New agent tool actions: `market_search_skills`, `market_install_skill`,
+  `market_search_mcp`, `market_install_mcp`.
+- Optional `GITHUB_TOKEN` support raises the GitHub API rate limit when downloading
+  skill bundles.
+- `scripts/test-market.mjs`: fake-network tests for search normalization, GitHub tree
+  picking, bundle download and MCP install planning; CI runs it as its own step.
+
+### Changed
+
+- Skills and MCP market with one-click install.
+
 ## [0.4.0] - 2026-10-27
 
 ### Added

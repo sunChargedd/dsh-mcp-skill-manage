@@ -37,6 +37,7 @@ recomposition; a plain page refresh (Cmd/Ctrl+R) reloads the client half.
 | `lib/presets.js` | Candidate paths for every supported agent tool (data only). |
 | `lib/zip.js` | Zero-dependency zip reader/writer for skill import/export. |
 | `lib/probe.js` | MCP health probe (stdio JSON-RPC, HTTP, SSE). |
+| `lib/market.js` | skills.sh / MCP Registry market adapters and install planning. |
 | `scripts/test-*.mjs` | Self tests: data layer, utilities, Host actions, headless UI render. |
 | `scripts/bump-version.mjs` | Cuts `[Unreleased]` into a dated CHANGELOG release and bumps `package.json`. |
 | `scripts/release-notes.mjs` | Extracts one released CHANGELOG section (used by the Release workflow). |
@@ -71,7 +72,8 @@ recomposition; a plain page refresh (Cmd/Ctrl+R) reloads the client half.
 npm test                # everything (syntax + 4 suites)
 npm run test:adapters   # filesystem data layer
 npm run test:tools      # zip + MCP probe
-npm run test:actions    # Host actions end-to-end (temp HOME)
+npm run test:market      # market adapters (faked network)
+npm run test:actions     # Host actions end-to-end (temp HOME)
 npm run test:render     # headless render of the page (temp HOME)
 ```
 

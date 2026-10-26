@@ -137,7 +137,27 @@ window.__ModuleLoader__.load({
       'state.off': 'Off',
       'mcp.enabled': 'Enabled',
       'mcp.disabledLabel': 'Disabled',
+      'tab.market': 'Market',
       'tab.backups': 'Backups',
+      'market.skills': 'Skills market',
+      'market.mcp': 'MCP market',
+      'market.search': 'Search',
+      'market.searching': 'Searching…',
+      'market.install': 'Install',
+      'market.installing': 'Installing…',
+      'market.installedSkill': 'Installed {name}.',
+      'market.installedMcp': 'Added {name}.',
+      'market.installs': '{count} installs',
+      'market.remote': 'Remote',
+      'market.package': 'Package',
+      'market.envHint': '{count} env vars to fill',
+      'market.empty': 'Search the {source} to find something to install.',
+      'market.emptyTitle': 'Find skills and MCP servers',
+      'market.noResults': 'No results for that search.',
+      'market.targetRoot': 'Install into',
+      'market.targetConfig': 'Add to',
+      'market.resultCount': '{count} results',
+      'market.failed': 'Market request failed: {message}',
       'backup.note': 'Every edit and delete keeps a snapshot. Restoring a config writes the old file back (a fresh backup is taken first); restoring a skill adds a -restored suffix when the name is taken.',
       'backup.empty': 'No backups yet.',
       'backup.emptyHint': 'Snapshots appear here after the first edit or delete.',
@@ -275,7 +295,27 @@ window.__ModuleLoader__.load({
       'state.off': '已关闭',
       'mcp.enabled': '已启用',
       'mcp.disabledLabel': '已禁用',
+      'tab.market': '市场',
       'tab.backups': '备份',
+      'market.skills': 'Skills 市场',
+      'market.mcp': 'MCP 市场',
+      'market.search': '搜索',
+      'market.searching': '搜索中…',
+      'market.install': '安装',
+      'market.installing': '安装中…',
+      'market.installedSkill': '已安装 {name}。',
+      'market.installedMcp': '已添加 {name}。',
+      'market.installs': '{count} 次安装',
+      'market.remote': '远程',
+      'market.package': '包',
+      'market.envHint': '需填写 {count} 个环境变量',
+      'market.empty': '搜索 {source}，找到合适的 skill / MCP 直接安装。',
+      'market.emptyTitle': '发现 skill 与 MCP',
+      'market.noResults': '没有找到匹配结果。',
+      'market.targetRoot': '安装到',
+      'market.targetConfig': '添加到',
+      'market.resultCount': '{count} 个结果',
+      'market.failed': '市场请求失败：{message}',
       'backup.note': '每次编辑和删除都会留一份快照。恢复配置文件会写回旧内容（写回前会再备份一次当前文件）；恢复 skill 时若重名会自动加 -restored 后缀。',
       'backup.empty': '还没有备份。',
       'backup.emptyHint': '第一次编辑或删除后会在这里出现快照。',
@@ -848,6 +888,8 @@ window.__ModuleLoader__.load({
 .msm-skillCard{position:relative;display:flex;flex-direction:column;gap:8px;padding:14px 16px;border:.5px solid var(--dsw-alias-border-l2);border-radius:var(--dsw-radius-lg);background:var(--dsw-alias-bg-base);cursor:pointer;text-align:left;font:inherit;color:inherit;outline:none;transition:background .14s ease,border-color .14s ease}
 .msm-skillCard:hover{background:var(--dsw-alias-bg-layer-1);border-color:var(--dsw-alias-border-l4)}
 .msm-skillCard:focus-visible{border-color:var(--dsw-alias-state-business-primary);box-shadow:0 0 0 2px var(--dsw-alias-state-business-primary)}
+.msm-static{cursor:default}
+.msm-static:hover{background:var(--dsw-alias-bg-base);border-color:var(--dsw-alias-border-l2)}
 .msm-skillCardHead{display:flex;align-items:center;gap:10px;min-width:0}
 .msm-avatar{flex:0 0 auto;display:flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:9px;background:var(--dsw-alias-bg-layer-3);color:var(--dsw-alias-label-secondary);font-size:13px;font-weight:600;text-transform:uppercase}
 .msm-skillCardTitles{min-width:0;flex:1;display:flex;flex-direction:column;gap:1px}
@@ -2620,6 +2662,213 @@ window.__ModuleLoader__.load({
     // Settings
     // -----------------------------------------------------------------------
 
+    /** Skills / MCP market page. */
+    function MarketPage({ ctx, manager, state }) {
+      const t = useT(ctx);
+      const locale = useLocaleId(ctx);
+      const [kind, setKind] = React.useState('skills');
+      const [query, setQuery] = React.useState('');
+      const [results, setResults] = React.useState(null);
+      const [loading, setLoading] = React.useState(false);
+      const [error, setError] = React.useState('');
+      const [notice, setNotice] = React.useState(null);
+      const [installing, setInstalling] = React.useState(null);
+      const roots = state.skillRoots.filter((root) => root.writable);
+      const targets = state.mcpTargets.filter((target) => target.writable);
+      const [targetRoot, setTargetRoot] = React.useState((roots[0] ?? { id: 'agents:user' }).id);
+      const [targetId, setTargetId] = React.useState((targets[0] ?? { id: 'cursor:user' }).id);
+
+      React.useEffect(() => {
+        setResults(null);
+        setError('');
+      }, [kind]);
+
+      const flash = (message) => {
+        setNotice(message);
+        setTimeout(() => setNotice(null), 2800);
+      };
+
+      const search = async () => {
+        const term = query.trim();
+        if (term.length < 2) return;
+        setLoading(true);
+        setError('');
+        try {
+          const value = await manager.run(kind === 'skills' ? 'market/skills' : 'market/mcp', {
+            query: term,
+            limit: 24,
+          });
+          setResults(value?.results ?? []);
+        } catch (cause) {
+          setError(t('market.failed', { message: cause.message }));
+          setResults([]);
+        } finally {
+          setLoading(false);
+        }
+      };
+
+      const installSkill = async (entry) => {
+        setInstalling(entry.id);
+        try {
+          const value = await manager.run('market/install_skill', {
+            source: entry.source,
+            skillId: entry.skillId,
+            targetRootId: targetRoot,
+          });
+          flash(t('market.installedSkill', { name: value?.imported?.[0]?.name ?? entry.name }));
+        } catch (cause) {
+          setError(t('market.failed', { message: cause.message }));
+        } finally {
+          setInstalling(null);
+        }
+      };
+
+      const installMcp = async (entry) => {
+        setInstalling(entry.name);
+        try {
+          const value = await manager.run('market/install_mcp', { targetId, entry });
+          const warning = value?.warnings?.length
+            ? ` ${t('market.envHint', { count: value.warnings.length })}`
+            : '';
+          flash(`${t('market.installedMcp', { name: value?.name ?? entry.title })}${warning}`);
+        } catch (cause) {
+          setError(t('market.failed', { message: cause.message }));
+        } finally {
+          setInstalling(null);
+        }
+      };
+
+      return h(
+        'div',
+        { className: 'msm-page' },
+        h(
+          'div',
+          { className: 'msm-pageInner' },
+          h(
+            'div',
+            { className: 'msm-toolbar' },
+            h(Segmented, {
+              value: kind,
+              onChange: setKind,
+              options: [
+                { value: 'skills', label: t('market.skills') },
+                { value: 'mcp', label: t('market.mcp') },
+              ],
+            }),
+            h(SearchInput, {
+              value: query,
+              onChange: setQuery,
+              placeholder: kind === 'skills' ? 'react, pdf, testing…' : 'github, filesystem, browser…',
+            }),
+            h(
+              Button,
+              { variant: 'primary', onClick: () => void search(), disabled: loading || query.trim().length < 2 },
+              loading ? t('market.searching') : t('market.search'),
+            ),
+            h('span', { className: 'msm-count' }, results === null ? '' : t('market.resultCount', { count: results.length })),
+            h('span', { className: 'msm-toolbarSpacer' }),
+            h(
+              'span',
+              { className: 'msm-inline' },
+              h('span', { className: 'msm-hint' }, kind === 'skills' ? t('market.targetRoot') : t('market.targetConfig')),
+              kind === 'skills'
+                ? h(Select, {
+                    value: targetRoot,
+                    onChange: setTargetRoot,
+                    options: roots.map((root) => ({ value: root.id, label: `${localized(root, locale)}` })),
+                  })
+                : h(Select, {
+                    value: targetId,
+                    onChange: setTargetId,
+                    options: targets.map((target) => ({ value: target.id, label: localized(target, locale) })),
+                  }),
+            ),
+          ),
+          error ? h(Note, { tone: 'error' }, error) : null,
+          notice ? h('div', { className: 'msm-toast' }, notice) : null,
+          results === null
+            ? h(Empty, {
+                title: t('market.emptyTitle'),
+                hint: t('market.empty', { source: kind === 'skills' ? 'skills.sh' : 'MCP Registry' }),
+              })
+            : results.length === 0
+              ? h(Empty, { title: t('market.noResults') })
+              : h(
+                  'div',
+                  { className: 'msm-grid' },
+                  results.map((entry) =>
+                    kind === 'skills'
+                      ? h(
+                          'div',
+                          { key: entry.id, className: 'msm-skillCard msm-static' },
+                          h(
+                            'div',
+                            { className: 'msm-skillCardHead' },
+                            h('span', { className: 'msm-avatar' }, monogram(entry.name)),
+                            h(
+                              'span',
+                              { className: 'msm-skillCardTitles' },
+                              h('span', { className: 'msm-skillName' }, entry.name),
+                              h('span', { className: 'msm-cellSub' }, entry.source),
+                            ),
+                            h(Badge, { tone: 'brand' }, t('market.installs', { count: entry.installs })),
+                          ),
+                          h('span', { className: 'msm-skillDesc' }, entry.id),
+                          h(
+                            'div',
+                            { className: 'msm-skillFoot' },
+                            h('span', { className: 'msm-spacer' }),
+                            h(
+                              Button,
+                              {
+                                variant: 'primary',
+                                disabled: installing !== null,
+                                onClick: () => void installSkill(entry),
+                              },
+                              installing === entry.id ? t('market.installing') : t('market.install'),
+                            ),
+                          ),
+                        )
+                      : h(
+                          'div',
+                          { key: entry.name, className: 'msm-skillCard msm-static' },
+                          h(
+                            'div',
+                            { className: 'msm-skillCardHead' },
+                            h('span', { className: 'msm-avatar' }, monogram(entry.title || entry.name)),
+                            h(
+                              'span',
+                              { className: 'msm-skillCardTitles' },
+                              h('span', { className: 'msm-skillName' }, entry.title || entry.name),
+                              h('span', { className: 'msm-cellSub' }, entry.name),
+                            ),
+                            entry.remotes.length > 0
+                              ? h(Badge, { tone: 'brand' }, t('market.remote'))
+                              : h(Badge, null, t('market.package')),
+                          ),
+                          h('span', { className: 'msm-skillDesc' }, entry.description || ''),
+                          h(
+                            'div',
+                            { className: 'msm-skillFoot' },
+                            h('span', { className: 'msm-cellSub' }, entry.version ? `v${entry.version}` : ''),
+                            h('span', { className: 'msm-spacer' }),
+                            h(
+                              Button,
+                              {
+                                variant: 'primary',
+                                disabled: installing !== null,
+                                onClick: () => void installMcp(entry),
+                              },
+                              installing === entry.name ? t('market.installing') : t('market.install'),
+                            ),
+                          ),
+                        ),
+                  ),
+                ),
+        ),
+      );
+    }
+
     /** Backup snapshots page. */
     function BackupsPage({ ctx, manager, state }) {
       const t = useT(ctx);
@@ -3053,6 +3302,7 @@ window.__ModuleLoader__.load({
         ? [
             ['skills', t('tab.skills'), state.skills.length],
             ['mcp', t('tab.mcp'), state.mcpServers.length],
+            ['market', t('tab.market'), null],
             ['backups', t('tab.backups'), state.backups.length],
             ['settings', t('tab.settings'), state.warnings.length],
           ]
@@ -3114,6 +3364,8 @@ window.__ModuleLoader__.load({
           filter: listFilter,
           onFilterChange: updateFilter,
         });
+      } else if (tab === 'market') {
+        body = h(MarketPage, { ctx, manager, state });
       } else if (tab === 'backups') {
         body = h(BackupsPage, { ctx, manager, state });
       } else if (tab === 'mcp') {
@@ -3181,11 +3433,13 @@ window.__ModuleLoader__.load({
                     },
                   },
                   label,
-                  h(
-                    'span',
-                    { className: cx('msm-tabCount', id === 'settings' && count > 0 && 'warn') },
-                    String(count),
-                  ),
+                  count === null
+                    ? null
+                    : h(
+                        'span',
+                        { className: cx('msm-tabCount', id === 'settings' && count > 0 && 'warn') },
+                        String(count),
+                      ),
                 ),
               ),
             ),

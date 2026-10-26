@@ -15,6 +15,12 @@ import { constants, existsSync } from 'node:fs';
 import { access, mkdir, readdir, readFile, rename, stat, writeFile } from 'node:fs/promises';
 import { dirname, isAbsolute, join, resolve, sep } from 'node:path';
 import { createZip, readZip } from './lib/zip.js';
+import {
+  fetchSkillBundle,
+  mcpInstallPlan,
+  searchMcpRegistry,
+  searchSkillMarket,
+} from './lib/market.js';
 import { probeMcpServer } from './lib/probe.js';
 import {
   backupRoot,
@@ -66,6 +72,10 @@ const TOOL_ACTIONS = [
   'export_skills',
   'import_skill',
   'mcp_health',
+  'market_search_skills',
+  'market_install_skill',
+  'market_search_mcp',
+  'market_install_mcp',
   'doctor',
 ];
 
@@ -772,6 +782,58 @@ async function runAction(paths, action, params) {
       return { health: { ...health, targetId, name, checkedAt: new Date().toISOString() } };
     }
 
+    case 'market/skills': {
+      const query = requireString(params, 'query');
+      return await searchSkillMarket(query, {
+        limit: Number.isInteger(params.limit) ? params.limit : 20,
+      });
+    }
+
+    case 'market/mcp': {
+      const query = requireString(params, 'query');
+      return await searchMcpRegistry(query, {
+        limit: Number.isInteger(params.limit) ? params.limit : 20,
+      });
+    }
+
+    case 'market/install_skill': {
+      const source = requireString(params, 'source');
+      const skillId = requireString(params, 'skillId');
+      const targetRootId = requireString(params, 'targetRootId');
+      const bundle = await fetchSkillBundle({ source, skillId });
+      const result = await runAction(paths, 'skill/import_zip', {
+        targetRootId,
+        filename: `${skillId}.zip`,
+        base64: createZip(bundle.entries).toString('base64'),
+      });
+      return { ...result, source, skillId };
+    }
+
+    case 'market/install_mcp': {
+      const targetId = requireString(params, 'targetId');
+      let entry = params.entry !== null && typeof params.entry === 'object' ? params.entry : null;
+      if (entry === null) {
+        const lookup = requireString(params, 'name');
+        const found = await searchMcpRegistry(lookup, { limit: 50 });
+        entry =
+          found.results.find((candidate) => candidate.name === lookup || candidate.title === lookup) ??
+          found.results[0];
+        if (entry === undefined) throw new Error(`MCP server not found in the registry: ${lookup}`);
+      }
+      const plan = mcpInstallPlan(entry);
+      const existing = (await listMcpServers(paths, projects, custom)).servers.filter(
+        (server) => server.targetId === targetId,
+      );
+      let name = plan.name;
+      let suffix = 2;
+      while (existing.some((server) => server.name === name)) {
+        name = `${plan.name.slice(0, 28)}-${suffix}`;
+        suffix += 1;
+      }
+      await saveMcpServer({ ...scope, targetId, name, server: plan.server });
+      return { name, warnings: plan.warnings, state: await state() };
+    }
+
     case 'doctor':
       return { state: await state() };
 
@@ -887,6 +949,7 @@ const TOOL_DESCRIPTION = [
   'Skills are SKILL.md bundles (or flat <name>.md files) discovered in the user roots (dsh, agents, claude, codex, cursor) and in the tracked project directories (.dsh/skills, .agents/skills, .claude/skills, .codex/skills, .cursor/skills).',
   'MCP servers live in the DSH profile patch, ~/.claude.json, ~/.codex/config.toml and ~/.cursor/mcp.json, plus project .mcp.json / .cursor/mcp.json files.',
   'Actions: overview (counts and tracked projects), list_skills, read_skill (frontmatter + body), save_skill (create or edit; optional roots expose it to those tool roots via symlinks), delete_skill (backs up first), set_skill_visibility, list_mcp, save_mcp, delete_mcp, copy_mcp (copy one server to other tool targets), doctor (consistency report).',
+  'A market is available too: market_search_skills / market_install_skill (skills.sh sources installed from GitHub) and market_search_mcp / market_install_mcp (official MCP registry).',
   'Call overview first, then read/list before editing. Prefer editing an existing skill over creating a near-duplicate; share one skill across tools with set_skill_visibility instead of copying it.',
 ].join(' ');
 
@@ -1022,6 +1085,20 @@ function managerTool(paths) {
           const result = await runAction(paths, 'mcp/health', params);
           return result.health;
         }
+        case 'market_search_skills': {
+          return await searchSkillMarket(requireString(params, 'query'), {
+            limit: Number.isInteger(params.limit) ? params.limit : 20,
+          });
+        }
+        case 'market_install_skill':
+          return pickState(await runAction(paths, 'market/install_skill', params));
+        case 'market_search_mcp': {
+          return await searchMcpRegistry(requireString(params, 'query'), {
+            limit: Number.isInteger(params.limit) ? params.limit : 20,
+          });
+        }
+        case 'market_install_mcp':
+          return pickState(await runAction(paths, 'market/install_mcp', params));
         case 'doctor': {
           const report = await doctor(paths, (await loadSettings(paths)).projects);
           return report;

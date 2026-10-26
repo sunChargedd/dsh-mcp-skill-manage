@@ -49,12 +49,12 @@
       },
       "versions": [
         {
-          "version": "0.2.2",
-          "publishTimestamp": 1793038330,
+          "version": "0.3.0",
+          "publishTimestamp": 1793038758,
           "source": {
             "type": "git",
             "url": "https://github.com/sunChargedd/dsh-mcp-skill-manage",
-            "commit": "d73094783a2f3094c1dbb8e1ba29c5fe804af6d9"
+            "commit": "b1129c550ccaa82268ff8ae597d460d74dd9e709"
           },
           "engines": {}
         }

@@ -8,6 +8,7 @@
 
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Node](https://img.shields.io/badge/node-%3E%3D20-brightgreen)](package.json)
+[![npm](https://img.shields.io/npm/v/dsh-mcp-skill-manage.svg)](https://www.npmjs.com/package/dsh-mcp-skill-manage)
 [![CI](https://github.com/sunChargedd/dsh-mcp-skill-manage/actions/workflows/ci.yml/badge.svg)](https://github.com/sunChargedd/dsh-mcp-skill-manage/actions/workflows/ci.yml)
 [![DSH](https://img.shields.io/badge/DeepSeek%20Harness-plugin-4E7CF6)](https://github.com/deepseek-ai/deepseek-harness)
 
@@ -98,15 +99,29 @@
 
 ## 安装
 
-### 通过 Plugin Manager（推荐）
+### 从 npm 安装（推荐）
 
-把这个仓库目录安装到你的 DSH profile：
+npm 包：[`dsh-mcp-skill-manage`](https://www.npmjs.com/package/dsh-mcp-skill-manage)（当前版本 `0.5.5`）。
+
+```text
+plugin_manager action=install_bundle target=dsh-mcp-skill-manage@0.5.5
+```
+
+或使用 DSH CLI：
+
+```bash
+dsh plugin add dsh-mcp-skill-manage@0.5.5
+```
+
+安装后刷新 Web 页面，左侧栏会出现插头图标「MCP 与技能」。入口 id 为 `mcp-skill-manager`。
+
+### 本地开发安装
+
+直接把仓库目录 link 进 DSH profile（改代码即时生效）：
 
 ```text
 plugin_manager action=install_bundle target=<仓库绝对路径>
 ```
-
-安装后刷新 Web 页面，左侧栏会出现插头图标「MCP 与技能」。入口 id 为 `mcp-skill-manager`。
 
 ### 手动
 

@@ -8,6 +8,7 @@
 
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Node](https://img.shields.io/badge/node-%3E%3D20-brightgreen)](package.json)
+[![npm](https://img.shields.io/npm/v/dsh-mcp-skill-manage.svg)](https://www.npmjs.com/package/dsh-mcp-skill-manage)
 [![CI](https://github.com/sunChargedd/dsh-mcp-skill-manage/actions/workflows/ci.yml/badge.svg)](https://github.com/sunChargedd/dsh-mcp-skill-manage/actions/workflows/ci.yml)
 
 [中文](README.md) | **English**
@@ -44,13 +45,29 @@ A [DeepSeek Harness (DSH)](https://github.com/deepseek-ai/deepseek-harness) Web 
 
 ## Install
 
-Install this directory into your DSH profile with the Plugin Manager:
+### From npm (recommended)
+
+Package: [`dsh-mcp-skill-manage`](https://www.npmjs.com/package/dsh-mcp-skill-manage) (current version `0.5.5`).
+
+```text
+plugin_manager action=install_bundle target=dsh-mcp-skill-manage@0.5.5
+```
+
+or with the DSH CLI:
+
+```bash
+dsh plugin add dsh-mcp-skill-manage@0.5.5
+```
+
+Then refresh the Web page: a plug icon named “MCP & Skills” appears in the left sidebar (entry id `mcp-skill-manager`).
+
+### Local development
+
+Link this directory into your DSH profile so source edits reload immediately:
 
 ```text
 plugin_manager action=install_bundle target=<absolute path to this repo>
 ```
-
-Then refresh the Web page: a plug icon named “MCP & Skills” appears in the left sidebar (entry id `mcp-skill-manager`).
 
 ## Development
 

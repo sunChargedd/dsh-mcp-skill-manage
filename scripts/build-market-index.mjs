@@ -6,8 +6,12 @@
  * produces an equivalent index that installs the plugin straight from this Git
  * repository, pinned to one commit, so it can be used before/without an npm release:
  *
- *   npm run market:build                       # pin the current HEAD commit
+ *   npm run market:build                       # pin the current HEAD commit (git source)
  *   node scripts/build-market-index.mjs --commit <40-hex-sha> --version 0.2.2
+ *   node scripts/build-market-index.mjs --source npm --version 0.5.5
+ *
+ * Once the package is on npm, `--source npm` is the smoother option: installs resolve
+ * through the registry and get normal npm update behavior instead of a pinned commit.
  *
  * Users then add the raw URL of market/index.json in
  * Settings → Plugins → Discover → Index sources.
@@ -32,6 +36,11 @@ function option(name) {
 const repositoryUrl = 'https://github.com/sunChargedd/dsh-mcp-skill-manage';
 const version = option('version') ?? manifest.version;
 if (!/^\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?$/.test(version)) throw new Error(`invalid version: ${version}`);
+const sourceType = option('source') ?? 'git';
+if (sourceType !== 'git' && sourceType !== 'npm') throw new Error(`invalid source: ${sourceType}`);
+if (sourceType === 'npm' && version !== manifest.version) {
+  throw new Error('--source npm expects the current package.json version');
+}
 const commit = option('commit') ?? execFileSync('git', ['rev-parse', 'HEAD'], { cwd: root, encoding: 'utf8' }).trim();
 if (!/^[0-9a-f]{40}$/.test(commit)) throw new Error(`invalid commit: ${commit}`);
 
@@ -73,7 +82,10 @@ const index = {
         {
           version,
           publishTimestamp: Math.floor(Date.now() / 1000),
-          source: { type: 'git', url: repositoryUrl, commit },
+          source:
+            sourceType === 'npm'
+              ? { type: 'npm' }
+              : { type: 'git', url: repositoryUrl, commit },
           engines: manifest.engines?.dsh ? { dsh: manifest.engines.dsh } : {},
         },
       ],
@@ -84,5 +96,5 @@ const index = {
 const destination = join(root, 'market', 'index.json');
 await mkdir(dirname(destination), { recursive: true });
 await writeFile(destination, `${JSON.stringify(index, null, 2)}\n`, 'utf8');
-console.log(`market index written: market/index.json (v${version} @ ${commit.slice(0, 12)})`);
+console.log(`market index written: market/index.json (v${version}, ${sourceType} source${sourceType === 'git' ? ` @ ${commit.slice(0, 12)}` : ''})`);
 console.log('raw URL: https://raw.githubusercontent.com/sunChargedd/dsh-mcp-skill-manage/main/market/index.json');

@@ -8,17 +8,25 @@
 | **GitHub-only 收录** | 仓库满足收录要求 + PR | 网站给出一条 `dsh plugin add` 命令 | 否（默认索引只收 npm 包） |
 | **npm 发布 + Awesome 索引** | npm 账号 + PR | Discover 里搜索一键安装 | 是 |
 
-> **当前状态**：项目已从 `dsh-mcp-skill-manager` 改名为 **`dsh-mcp-skill-manage`**（旧 npm 名被其他作者占用），仓库、包名、client 模块 id 与 loader 行已全部同步；npm 包名已确认可用，`package.json` 已设置 `"private": false` 与 `"publishConfig": { "access": "public" }`。剩余步骤：`npm login` → `npm publish` → 仓库满 1 天后提交 Awesome PR。
+> **当前状态**：**已发布到 npm** 的 `dsh-mcp-skill-manage@0.5.5`（https://www.npmjs.com/package/dsh-mcp-skill-manage），`private: false` + `publishConfig.access: public`，`engines.dsh` 已带上。自建索引已切到 `--source npm`。剩余步骤：仓库满 1 天后提交 Awesome PR（合并后进默认 Discover 市场）。
+>
+> **发布注意（2FA）**：npm 账号开了 2FA 时，`npm publish` 需要 `--otp <6位码>`，或使用带 **Bypass 2FA** 的 granular token（本机曾用后者发布）。用 bypass token 发布时 npm 可能走 *staged publishing*：先产生 `0.0.0-stage` 占位版本，真实版本延迟几十秒到几分钟才出现在 registry，`npm view` 初始可能只看到占位版本，稍等再查即可（本次发布即为此情况，最终 `dist-tags.latest` 正确指向 `0.5.5`）。需要显式 stage/approve 时用 npm >= 11.15：`npm stage publish` → `npm stage list` → `npm stage approve <uuid> --otp <code>`（本机 npm 10 不支持 `npm stage`，可用 `npx npm@12`）。
 
 ---
 
-## 1. 自建索引（今天就能用）
+## 1. 自建索引（已可 npm source）
 
-仓库里已经能生成 format-1 的市场索引，条目用 **git source** 安装，因此不依赖 npm：
+仓库里能生成 format-1 的市场索引。**已发布 npm 后推荐 npm source**（安装走 registry，有正常版本更新）：
+
+```bash
+node scripts/build-market-index.mjs --source npm --version 0.5.5
+git add market/index.json && git commit -m "chore: refresh market index" && git push
+```
+
+未发布 npm 时也可用 **git source**（固定 commit，不依赖 npm）：
 
 ```bash
 npm run market:build -- --version <version> --commit "$(git rev-parse 'v<version>^{commit}')"
-git add market/index.json && git commit -m "chore: refresh market index" && git push
 ```
 
 索引地址（用户加到 Settings → Plugins → Discover → Index sources）：
@@ -27,7 +35,7 @@ git add market/index.json && git commit -m "chore: refresh market index" && git 
 https://raw.githubusercontent.com/sunChargedd/dsh-mcp-skill-manage/main/market/index.json
 ```
 
-索引里 `source.commit` 固定到发布 commit；每次发新版本后重新生成一次即可。生成脚本：`scripts/build-market-index.mjs`。
+git source 的 `source.commit` 固定到发布 commit；npm source 只需版本号。每次发新版本后重新生成一次即可。生成脚本：`scripts/build-market-index.mjs`。
 
 ## 2. 收录进 Awesome DSH Plugin（网站列表）
 
@@ -36,7 +44,7 @@ https://raw.githubusercontent.com/sunChargedd/dsh-mcp-skill-manage/main/market/i
 - 一个插件一个文件：`data/plugins/<owner>__<repo>.yml`
 - 收录要求（PR 自动检查）：
   - `package.json` 声明 **`dsh.bundle`** manifest（本仓库 ✓）
-  - 仓库创建满 **1 天**（本仓库是新建的，需要等一天）
+  - 仓库创建满 **1 天**（本仓库创建于 2026-10-26T18:06Z，2026-10-27T18:06Z 起可提交）
   - 仓库带 **`dsh-plugin`** topic（本仓库 ✓）
 - 模板（放在本仓库 [market/awesome-plugin.yml](awesome-plugin.yml)，提交时复制到对方仓库）：
 

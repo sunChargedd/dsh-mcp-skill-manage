@@ -1,0 +1,38 @@
+name: npm publish
+
+# Manual, OIDC-based publishing through npm Trusted Publishing.
+# One-time setup on npmjs.com (package → Settings → Trusted Publisher → GitHub Actions):
+#   owner: sunChargedd, repository: dsh-mcp-skill-manage, workflow: npm-publish.yml
+# After that this workflow publishes without a token or OTP prompt.
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Version to publish (must equal package.json version)
+        required: true
+        type: string
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    env:
+      VERSION: ${{ inputs.version }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          registry-url: https://registry.npmjs.org
+      - name: Verify version
+        run: |
+          node -e "const { version } = require('./package.json'); if (version !== process.env.VERSION) { console.error('package.json version ' + version + ' does not match ' + process.env.VERSION); process.exit(1); }"
+      - name: Test
+        run: npm test
+      - name: Publish
+        run: npm publish --provenance --access public

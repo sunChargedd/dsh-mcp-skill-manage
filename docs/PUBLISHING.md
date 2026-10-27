@@ -83,12 +83,29 @@ git push origin HEAD   # 然后在 GitHub 上开 PR
 
 另外 `scripts/test-render.mjs` 的模块 id 断言、`lib/probe.js` 的 CLIENT_INFO 也随包名更新。当前仓库已全部完成，无需再改。
 
-### 3.2 发布
+### 3.2 发布（本机 OTP 或 Trusted Publishing）
+
+**方式一：本机发布（需要 2FA 验证码）**
+
+```bash
+npm publish --access public --otp=<6位验证码>
+```
+
+**方式二：GitHub Actions + npm Trusted Publishing（推荐，之后无需 OTP/token）**
+
+1. npm 包页面 → Settings → **Trusted Publisher** → GitHub Actions：
+   - Organization/user: `sunChargedd`
+   - Repository: `dsh-mcp-skill-manage`
+   - Workflow filename: `npm-publish.yml`
+2. 在 GitHub Actions 手动运行 **npm publish** 工作流，输入与 `package.json` 一致的版本号。
+3. 工作流用 OIDC（`id-token: write` + `--provenance`）发布，不需要任何 token。
+
+### 3.3 手动发布（旧）
 
 ```bash
 npm login                    # 一次性
 npm pack --dry-run           # 检查打进去的文件（应只有运行时文件）
-npm publish --access public
+npm publish --access public  # 2FA 账号需 --otp <code>
 ```
 
 发布后用户可以直接：
